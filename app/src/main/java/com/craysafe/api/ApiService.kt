@@ -7,6 +7,7 @@ import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import com.craysafe.api.models.LoginResponse
 import com.craysafe.api.models.DashboardResponse
+import com.craysafe.api.models.PairTankResponse
 
 interface ApiService {
 
@@ -32,4 +33,10 @@ interface ApiService {
         @Field("confirm_password") confirm_password: String
     ): LoginResponse
 
+    @FormUrlEncoded
+    @POST("pair-tank")
+    suspend fun pairTank(
+        @Header("Authorization") token: String,
+        @Field("product_id") productId: String
+    ): PairTankResponse
 }

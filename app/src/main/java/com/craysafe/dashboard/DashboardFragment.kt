@@ -42,6 +42,14 @@ class DashboardFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        binding.fabAddTank.setOnClickListener {
+            val dialog = AddTankDialog {
+                // Callback when tank is paired - refresh dashboard
+                viewModel.loadDashboard(sessionManager)
+            }
+            dialog.show(childFragmentManager, "AddTankDialog")
+        }
+
         sessionManager = SessionManager(requireContext())
         viewModel = ViewModelProvider(this)[DashboardViewModel::class.java]
 
