@@ -30,7 +30,8 @@ interface ApiService {
         @Field("username") username: String,
         @Field("email") email: String,
         @Field("password") password: String,
-        @Field("confirm_password") confirm_password: String
+        @Field("confirm_password") confirm_password: String,
+        @Field("product_id") productId: String
     ): LoginResponse
 
     @FormUrlEncoded

@@ -16,7 +16,7 @@ class RegisterViewModel : ViewModel() {
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
 
-    fun register(username: String, email: String, password: String, confirm_password: String) {
+    fun register(username: String, email: String, password: String, confirm_password: String, productId: String) {
         _isLoading.value = true
 
         viewModelScope.launch {
@@ -25,7 +25,8 @@ class RegisterViewModel : ViewModel() {
                     username = username,
                     email = email,
                     password = password,
-                    confirm_password = confirm_password
+                    confirm_password = confirm_password,
+                    productId = productId
                 )
                 _isLoading.value = false
 

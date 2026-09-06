@@ -43,7 +43,7 @@ class RegisterActivity : AppCompatActivity() {
                             role = user.role
                         )
                     }
-                    Toast.makeText(this, "✅ Registration successful!", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "✅ Registration successful! Your tank is ready.", Toast.LENGTH_LONG).show()
                     startActivity(Intent(this, MainActivity::class.java))
                     finish()
                 }
@@ -59,6 +59,7 @@ class RegisterActivity : AppCompatActivity() {
             val email = binding.etEmail.text.toString().trim()
             val password = binding.etPassword.text.toString().trim()
             val confirmPassword = binding.etConfirmPassword.text.toString().trim()
+            val productId = binding.etProductId.text.toString().trim()
 
             if (username.isEmpty()) {
                 binding.etUsername.error = "Username is required"
@@ -85,7 +86,12 @@ class RegisterActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            viewModel.register(username, email, password, confirmPassword)
+            if (productId.isEmpty()) {
+                binding.etProductId.error = "Product ID is required"
+                return@setOnClickListener
+            }
+
+            viewModel.register(username, email, password, confirmPassword, productId)
         }
 
         // Login link click
