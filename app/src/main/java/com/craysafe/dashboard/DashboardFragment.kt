@@ -15,6 +15,7 @@ import com.craysafe.LoginActivity
 import com.craysafe.R
 import com.craysafe.databinding.FragmentDashboardBinding
 import com.craysafe.utils.SessionManager
+import androidx.navigation.fragment.findNavController
 
 class DashboardFragment : Fragment() {
 
@@ -61,11 +62,10 @@ class DashboardFragment : Fragment() {
 
     private fun setupRecyclerView() {
         adapter = TankDashboardAdapter { tankId ->
-            android.widget.Toast.makeText(
-                requireContext(),
-                "Tank $tankId clicked",
-                android.widget.Toast.LENGTH_SHORT
-            ).show()
+            val bundle = Bundle().apply {
+                putInt("tank_id", tankId)
+            }
+            findNavController().navigate(R.id.action_navigation_dashboard_to_tankDetail, bundle)
         }
 
         binding.rvTanks.apply {

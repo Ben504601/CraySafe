@@ -9,7 +9,19 @@
         android:id="@+id/navigation_dashboard"
         android:name="com.craysafe.dashboard.DashboardFragment"
         android:label="Dashboard"
-        tools:layout="@layout/fragment_dashboard" />
+        tools:layout="@layout/fragment_dashboard" >
+
+        <action
+            android:id="@+id/action_navigation_dashboard_to_tankDetail"
+            app:destination="@id/navigation_tankDetail" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_tankDetail"
+        android:name="com.craysafe.tank.TankDetailFragment"
+        android:label="Tank Details"
+        tools:layout="@layout/fragment_tank_detail" />
 
     <fragment
         android:id="@+id/navigation_alerts"

@@ -14,7 +14,7 @@ object ApiClient {
 
     // For USB Tethering IPv4 Address 10.176.30.170
 
-    private const val BASE_URL = "http://10.176.30.170:8000/api/"
+    private const val BASE_URL = "http://10.203.244.87:8000/api/"
 
     // Logging interceptor to see network calls in Logcat
     private val loggingInterceptor = HttpLoggingInterceptor().apply {
