@@ -12,7 +12,7 @@
         tools:layout="@layout/fragment_dashboard" >
 
         <action
-            android:id="@+id/action_navigation_dashboard_to_tankDetail"
+            android:id="@+id/action_dashboard_to_tankDetail"
             app:destination="@id/navigation_tankDetail" />
 
     </fragment>
@@ -20,7 +20,7 @@
     <fragment
         android:id="@+id/navigation_tankDetail"
         android:name="com.craysafe.tank.TankDetailFragment"
-        android:label="Tank Details"
+        android:label="Tank Detail"
         tools:layout="@layout/fragment_tank_detail" />
 
     <fragment

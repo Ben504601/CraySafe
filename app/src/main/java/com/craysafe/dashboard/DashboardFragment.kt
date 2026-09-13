@@ -65,7 +65,10 @@ class DashboardFragment : Fragment() {
             val bundle = Bundle().apply {
                 putInt("tank_id", tankId)
             }
-            findNavController().navigate(R.id.action_navigation_dashboard_to_tankDetail, bundle)
+            findNavController().navigate(
+                R.id.action_dashboard_to_tankDetail,
+                bundle
+            )
         }
 
         binding.rvTanks.apply {

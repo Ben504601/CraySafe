@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.craysafe.databinding.FragmentTankDetailBinding
@@ -52,50 +53,56 @@ class TankDetailFragment : Fragment() {
         // Load data
         if (tankId != -1) {
             viewModel.loadTankDetail(tankId, sessionManager)
+        } else {
+            Toast.makeText(requireContext(), "No tank ID received", Toast.LENGTH_SHORT).show()
         }
     }
 
     private fun setupObservers() {
         // Observe tank data changes
-        viewModel.tankData.observe(viewLifecycleOwner) { data ->
-            data?.let {
-                // Update UI with data
-                binding.tvTankName.text = it.tankName
-                binding.tvMode.text = it.mode
-                binding.tvTemperature.text = "${it.temperature}°C"
-                binding.tvPh.text = "${it.phLevel}"
-                binding.tvTurbidity.text = "${it.turbidity} NTU"
-                binding.tvStatus.text = it.status
-                binding.tvTimeToDanger.text = it.timeToDanger ?: "No prediction yet"
-
-                // Set status color
-                val color = when (it.status.lowercase()) {
-                    "safe" -> android.R.color.holo_green_dark
-                    "warning" -> android.R.color.holo_orange_dark
-                    "critical" -> android.R.color.holo_red_dark
-                    else -> android.R.color.darker_gray
-                }
-                binding.tvStatus.setTextColor(
-                    androidx.core.content.ContextCompat.getColor(requireContext(), color)
-                )
-            }
+        viewModel.data.observe(viewLifecycleOwner) { tankData ->
+            tankData?.let { updateUI(it) }
         }
 
-        // Observe loading state
         viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
             binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
         }
 
-        // Observe errors
         viewModel.error.observe(viewLifecycleOwner) { error ->
-            android.widget.Toast.makeText(requireContext(), error, android.widget.Toast.LENGTH_LONG).show()
+            error?.let {
+                Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
+            }
         }
+
+    }
+
+    private fun updateUI(data: com.craysafe.api.models.TankDetailData) {
+        binding.tvTankName.text = data.Tankname ?: "Tank #${data.TankID}"
+        binding.tvMode.text = "Mode: ${data.Mode ?: "Growing"}"
+        binding.tvTemperature.text = "${data.Temperature ?: 0.0}°C"
+        binding.tvPh.text = "${data.Ph_Level ?: 0.0}"
+        binding.tvTurbidity.text = "${data.Turbidity ?: 0.0} NTU"
+        binding.tvStatus.text = "Status: ${data.Status ?: "Unknown"}"
+        binding.tvTimeToDanger.text = data.TimeToDanger?.let { "Time-to-Danger: $it"}
+            ?: "No prediction yet"
+        binding.tvLastUpdated.text = "Last Updated: ${data.LastUpdated ?: "N/A"}"
+
+        // Status color
+        val colorRes = when (data.Status?.lowercase()) {
+            "safe" -> android.R.color.holo_green_dark
+            "warning" -> android.R.color.holo_orange_dark
+            "critical" -> android.R.color.holo_red_dark
+            else -> android.R.color.darker_gray
+        }
+        binding.tvStatus.setTextColor(
+            androidx.core.content.ContextCompat.getColor(requireContext(), colorRes)
+        )
     }
 
     private fun setupListeners() {
         // Mode Switch Button
         binding.btnSwitchMode.setOnClickListener {
-            val currentMode = viewModel.tankData.value?.mode ?: return@setOnClickListener
+            val currentMode = viewModel.data.value?.Mode ?: "Growing"
             val newMode = if (currentMode == "Growing") "Breeding" else "Growing"
 
             // Show confirmation dialog or just switch
