@@ -8,8 +8,10 @@ data class TankDetailData(
     val Ph_Level: Double?,
     val Turbidity: Double?,
     val Status: String?,
-    val TimeToDanger: String?,
-    val LastUpdated: String?
+    val LastUpdated: String?,
+    val TemperatureTTD: Long? = null,
+    val PhTTD: Long? = null,
+    val TurbidityTTD: Long? = null
 )
 
 data class TankDetailResponse(

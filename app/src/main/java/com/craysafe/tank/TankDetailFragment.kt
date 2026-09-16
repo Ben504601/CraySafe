@@ -83,8 +83,9 @@ class TankDetailFragment : Fragment() {
         binding.tvPh.text = "${data.Ph_Level ?: 0.0}"
         binding.tvTurbidity.text = "${data.Turbidity ?: 0.0} NTU"
         binding.tvStatus.text = "Status: ${data.Status ?: "Unknown"}"
-        binding.tvTimeToDanger.text = data.TimeToDanger?.let { "Time-to-Danger: $it"}
-            ?: "No prediction yet"
+        binding.tvTempTTD.text = "\uD83C\uDF21\uFE0F Temperature: ${formatTTD(data.TemperatureTTD)}"
+        binding.tvPhTTD.text = "\uD83E\uDDEA pH: ${formatTTD(data.PhTTD)}"
+        binding.tvTurbidityTTD.text = "\uD83D\uDCA7 Turbidity: ${formatTTD(data.TurbidityTTD)}"
         binding.tvLastUpdated.text = "Last Updated: ${data.LastUpdated ?: "N/A"}"
 
         // Status color
@@ -97,6 +98,16 @@ class TankDetailFragment : Fragment() {
         binding.tvStatus.setTextColor(
             androidx.core.content.ContextCompat.getColor(requireContext(), colorRes)
         )
+    }
+
+    // format minutes into a readable string
+    private fun formatTTD(minutes: Long?): String {
+        if (minutes == null) return "Safe"
+        return when {
+            minutes < 60 -> "⚠\uFE0F \${minutes} min"
+            minutes < 24 * 60 -> "⚠\uFE0F \${minutes / 60} hr"
+            else -> "⚠\uFE0F \${minutes / (60 * 24)} days"
+        }
     }
 
     private fun setupListeners() {
