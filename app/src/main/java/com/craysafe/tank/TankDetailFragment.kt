@@ -104,9 +104,9 @@ class TankDetailFragment : Fragment() {
     private fun formatTTD(minutes: Long?): String {
         if (minutes == null) return "Safe"
         return when {
-            minutes < 60 -> "⚠\uFE0F \${minutes} min"
-            minutes < 24 * 60 -> "⚠\uFE0F \${minutes / 60} hr"
-            else -> "⚠\uFE0F \${minutes / (60 * 24)} days"
+            minutes < 60 -> "⚠ ${minutes} min"
+            minutes < 24 * 60 -> "⚠ ${minutes / 60} hr"
+            else -> "⚠ ${minutes / (60 * 24)} days"
         }
     }
 

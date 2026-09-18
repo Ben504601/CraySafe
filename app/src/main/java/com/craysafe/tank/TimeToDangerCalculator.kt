@@ -16,14 +16,14 @@ object TimeToDangerCalculator {
     data class DangerResult(
         val minutes: Long,
         val predictedValue: Double,
-        val breachType: String // "high" or "Low"
+        val breachType: String  // "high" or "low"
     )
 
     /**
-     *  Returns minutes until threshold breach, or null if no danger
-     *  @param readings Historical readings (oldest first)
-     *  @param lowerBound Safe lower limit
-     *  @param upperBound Safe upper limit
+     * Returns minutes until threshold breach, or null if no danger.
+     * @param readings Historical readings (oldest first)
+     * @param lowerBound Safe lower limit
+     * @param upperBound Safe upper limit
      */
     fun compute(readings: List<Reading>, lowerBound: Double, upperBound: Double): DangerResult? {
         if (readings.size < 21) return null
@@ -65,8 +65,8 @@ object TimeToDangerCalculator {
 
         val startTime = readings.first().timeMillis
 
-        // Build design matrix X (n x 4) and target vector y (n)
-        val X = Array(n) {DoubleArray(4)}
+        // Build design matrix X (n × 4) and target vector y (n)
+        val X = Array(n) { DoubleArray(4) }
         val y = DoubleArray(n)
 
         for (i in 0 until n) {
@@ -79,10 +79,10 @@ object TimeToDangerCalculator {
             y[i] = readings[i].value
         }
 
-        // XtX = X^T . X (4x4)
+        // XtX = X^T · X  (4×4)
         val XtX = Array(4) { DoubleArray(4) }
         val Xty = DoubleArray(4)
-        for ( i in 0 until n) {
+        for (i in 0 until n) {
             for (j in 0 until 4) {
                 for (k in 0 until 4) {
                     XtX[j][k] += X[i][j] * X[i][k]
@@ -90,6 +90,7 @@ object TimeToDangerCalculator {
                 Xty[j] += X[i][j] * y[i]
             }
         }
+
         return solveLinearSystem(XtX, Xty)
     }
 
@@ -101,6 +102,7 @@ object TimeToDangerCalculator {
             aug[i][n] = b[i]
         }
 
+        // Forward elimination with partial pivoting
         for (i in 0 until n) {
             var maxRow = i
             for (k in i + 1 until n) {
@@ -134,5 +136,17 @@ object TimeToDangerCalculator {
         val calendar = java.util.Calendar.getInstance()
         calendar.timeInMillis = millis
         return calendar.get(java.util.Calendar.HOUR_OF_DAY)
+    }
+
+    /**
+     * Format minutes into a human-readable string.
+     */
+    fun formatTTD(result: DangerResult?): String {
+        if (result == null) return "✅ Safe for 30 days"
+        return when {
+            result.minutes < 60 -> "⚠\uFE0F In ${result.minutes} min"
+            result.minutes < 24 * 60 -> "⚠\uFE0F In ${result.minutes / 60} hr"
+            else -> "⚠\uFE0F In ${result.minutes / (24 * 60)} days"
+        }
     }
 }

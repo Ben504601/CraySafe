@@ -65,12 +65,6 @@ class TankDashboardAdapter(
                 root.setOnClickListener {
                     onTankClick(data.TankID)
                 }
-
-                fun bind(data: DashboardData) {
-                    binding.root.setOnClickListener {
-                        onTankClick(data.TankID)
-                    }
-                }
             }
         }
     }
