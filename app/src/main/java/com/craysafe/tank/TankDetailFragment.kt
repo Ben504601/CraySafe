@@ -74,6 +74,13 @@ class TankDetailFragment : Fragment() {
             }
         }
 
+        // Switch mode result
+        viewModel.switchResult.observe(viewLifecycleOwner) { message ->
+            message?.let {
+                Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
+            }
+        }
+
     }
 
     private fun updateUI(data: com.craysafe.api.models.TankDetailData) {
@@ -111,17 +118,24 @@ class TankDetailFragment : Fragment() {
     }
 
     private fun setupListeners() {
-        // Mode Switch Button
         binding.btnSwitchMode.setOnClickListener {
-            val currentMode = viewModel.data.value?.Mode ?: "Growing"
-            val newMode = if (currentMode == "Growing") "Breeding" else "Growing"
-
-            // Show confirmation dialog or just switch
-            viewModel.switchMode(tankId, newMode, sessionManager)
+            showModeConfirmationDialog()
         }
+    }
 
-        // Back button (in toolbar)
-        // We'll handle this with navigation
+    private fun showModeConfirmationDialog() {
+        val currentData = viewModel.data.value ?: return
+        val currentMode = currentData.Mode ?: "Growing"
+        val newMode = if (currentMode == "Growing") "Breeding" else "Growing"
+
+        androidx.appcompat.app.AlertDialog.Builder(requireContext())
+            .setTitle("Switch Mode?")
+            .setMessage("Change from $currentMode to $newMode?\n\nThe safety thresholds will be updated for the new mode.")
+            .setPositiveButton("Switch") { _, _ ->
+                viewModel.switchMode(tankId, newMode, sessionManager)
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
     }
 
     override fun onDestroyView() {

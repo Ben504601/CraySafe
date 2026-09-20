@@ -14,6 +14,9 @@ class TankDetailViewModel : ViewModel() {
     private val _data = MutableLiveData<TankDetailData?>()
     val data: LiveData<TankDetailData?> = _data
 
+    private val _switchResult = MutableLiveData<String?>()
+    val switchResult: LiveData<String?> = _switchResult
+
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
 
@@ -55,14 +58,35 @@ class TankDetailViewModel : ViewModel() {
 
     // Function to switch mode
     fun switchMode(tankId: Int, newMode: String, sessionManager: SessionManager) {
+        _isLoading.value = true
+        _error.value = null
+
         viewModelScope.launch {
             try {
-                val token = sessionManager.getToken() ?: return@launch
-                // TODO: Call API to switch mode
-                // After success, reload data:
-                loadTankDetail(tankId, sessionManager)
+                val token = sessionManager.getToken()
+                if (token == null) {
+                    _error.value = "Please login again"
+                    _isLoading.value = false
+                    return@launch
+                }
+
+                val response = ApiClient.apiService.switchMode(
+                    token = "Bearer $token",
+                    tankId = tankId,
+                    mode = newMode
+                )
+
+                if (response.success) {
+                    _switchResult.value = response.message
+
+                    loadTankDetail(tankId, sessionManager)
+                } else {
+                    _isLoading.value = false
+                    _error.value = response.message
+                }
             } catch (e: Exception) {
-                _error.value = "Failed to switch mode: $(e.message)"
+                _isLoading.value = false
+                _error.value = "Failed to switch mode: ${e.message}"
             }
         }
     }

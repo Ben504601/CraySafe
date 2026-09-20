@@ -10,6 +10,7 @@ import com.craysafe.api.models.LoginResponse
 import com.craysafe.api.models.DashboardResponse
 import com.craysafe.api.models.PairTankResponse
 import com.craysafe.api.models.TankDetailResponse
+import com.craysafe.api.models.SwitchModeResponse
 
 interface ApiService {
 
@@ -48,4 +49,12 @@ interface ApiService {
         @Header("Authorization") token: String,
         @Path("id") tankId: Int
     ): TankDetailResponse
+
+    @FormUrlEncoded
+    @POST("tank/{id}/mode")
+    suspend fun switchMode(
+        @Header("Authorization") token: String,
+        @Path("id") tankId: Int,
+        @Field("mode") mode: String
+    ): SwitchModeResponse
 }
