@@ -11,19 +11,21 @@
         android:layout_height="wrap_content"
         android:padding="@dimen/space_lg">
 
-        <!-- Logo / Brand -->
+        <!-- Logo -->
         <ImageView
             android:id="@+id/ivLogo"
             android:layout_width="72dp"
             android:layout_height="72dp"
-            android:src="@mipmap/ic_launcher"
+            android:src="@drawable/ic_craysafe_logo"
+            android:contentDescription="@string/app_name"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginTop="@dimen/space_xl" />
 
+        <!-- Welcome heading -->
         <TextView
-            android:id="@+id/tvTitle"
+            android:id="@+id/tvWelcome"
             style="@style/Text.H1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -40,11 +42,11 @@
             android:layout_height="wrap_content"
             android:text="Sign in to monitor your aquariums"
             android:layout_marginTop="@dimen/space_xs"
-            app:layout_constraintTop_toBottomOf="@id/tvTitle"
+            app:layout_constraintTop_toBottomOf="@id/tvWelcome"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
-        <!-- Email -->
+        <!-- Email field -->
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/tilEmail"
             style="@style/TextInput.Base"
@@ -60,11 +62,12 @@
                 android:id="@+id/etEmail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textEmailAddress" />
-
+                android:inputType="textEmailAddress"
+                android:textColor="@color/text_primary"
+                android:maxLines="1" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- Password -->
+        <!-- Password field -->
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/tilPassword"
             style="@style/TextInput.Base"
@@ -81,11 +84,12 @@
                 android:id="@+id/etPassword"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textPassword" />
-
+                android:inputType="textPassword"
+                android:textColor="@color/text_primary"
+                android:maxLines="1" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- Login Button -->
+        <!-- Sign In button -->
         <Button
             android:id="@+id/btnLogin"
             style="@style/Button.Primary"
@@ -97,6 +101,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
+        <!-- Loading spinner -->
         <ProgressBar
             android:id="@+id/progressBar"
             android:layout_width="24dp"
@@ -107,7 +112,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
-        <!-- Register Link -->
+        <!-- Register link -->
         <TextView
             android:id="@+id/tvRegister"
             style="@style/Text.Body"
@@ -116,10 +121,11 @@
             android:text="Don't have an account? Sign up"
             android:textColor="@color/primary"
             android:padding="@dimen/space_sm"
-            android:layout_marginTop="@dimen/space_lg"
+            android:layout_marginTop="@dimen/space_md"
             app:layout_constraintTop_toBottomOf="@id/progressBar"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

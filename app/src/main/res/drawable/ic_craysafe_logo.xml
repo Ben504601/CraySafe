@@ -1,0 +1,16 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="72dp"
+    android:height="72dp"
+    android:viewportWidth="72"
+    android:viewportHeight="72">
+
+    <!-- Circle background -->
+    <path
+        android:fillColor="@color/primary"
+        android:pathData="M36,36m-34,0a34,34 0,1 1,68 0a34,34 0,1 1,-68 0" />
+
+    <!-- Stylized water drop / crayfish silhouette -->
+    <path
+        android:fillColor="@color/white"
+        android:pathData="M36,18c-8,0 -14,8 -14,18c0,10 6,18 14,18c8,0 14,-8 14,-18C50,26 44,18 36,18zM36,46c-6,0 -10,-6 -10,-12c0,-6 4,-12 10,-12c6,0 10,6 10,12C46,40 42,46 36,46z" />
+</vector>

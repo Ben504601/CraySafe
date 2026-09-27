@@ -3,9 +3,6 @@ package com.craysafe.dashboard
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
@@ -16,6 +13,7 @@ import com.craysafe.R
 import com.craysafe.databinding.FragmentDashboardBinding
 import com.craysafe.utils.SessionManager
 import androidx.navigation.fragment.findNavController
+import android.widget.Toast
 
 class DashboardFragment : Fragment() {
 
@@ -28,7 +26,6 @@ class DashboardFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
     }
 
     override fun onCreateView(
@@ -51,6 +48,10 @@ class DashboardFragment : Fragment() {
             dialog.show(childFragmentManager, "AddTankDialog")
         }
 
+        binding.btnLogout.setOnClickListener {
+            showLogoutConfirmation()
+        }
+
         sessionManager = SessionManager(requireContext())
         viewModel = ViewModelProvider(this)[DashboardViewModel::class.java]
 
@@ -58,6 +59,22 @@ class DashboardFragment : Fragment() {
         setupObservers()
 
         viewModel.loadDashboard(sessionManager)
+    }
+
+    private fun showLogoutConfirmation() {
+        androidx.appcompat.app.AlertDialog.Builder(requireContext())
+            .setTitle("Log out?")
+            .setMessage("You'll need to sign in again to monitor your tanks.")
+            .setPositiveButton("Log out") { _, _ -> logout() }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+
+    private fun logout() {
+        sessionManager.logout()
+        startActivity(Intent(requireContext(), LoginActivity::class.java))
+        requireActivity().finish()
+        Toast.makeText(requireContext(), "Logged out", Toast.LENGTH_SHORT).show()
     }
 
     private fun setupRecyclerView() {
@@ -96,32 +113,6 @@ class DashboardFragment : Fragment() {
                 android.widget.Toast.LENGTH_LONG
             ).show()
         }
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.dashboard_menu, menu)
-        super.onCreateOptionsMenu(menu, inflater)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.action_logout -> {
-                logout()
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
-        }
-    }
-
-    private fun logout() {
-        sessionManager.logout()
-        startActivity(Intent(requireContext(), LoginActivity::class.java))
-        requireActivity().finish()
-        android.widget.Toast.makeText(
-            requireContext(),
-            "Logged out successfully",
-            android.widget.Toast.LENGTH_SHORT
-        ).show()
     }
 
     override fun onDestroyView() {
