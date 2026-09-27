@@ -5,10 +5,12 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import com.craysafe.auth.LoginResult
 import com.craysafe.auth.LoginViewModel
 import com.craysafe.databinding.ActivityLoginBinding
 import com.craysafe.utils.SessionManager
+import kotlinx.coroutines.launch
 
 class LoginActivity : AppCompatActivity() {
 
@@ -53,6 +55,24 @@ class LoginActivity : AppCompatActivity() {
                     Toast.makeText(this, "✅ Login successful!", Toast.LENGTH_SHORT).show()
                     startActivity(Intent(this, MainActivity::class.java))
                     finish()
+
+                    com.google.firebase.messaging.FirebaseMessaging.getInstance().token
+                        .addOnCompleteListener { task ->
+                            if (task.isSuccessful) {
+                                val fcmToken = task.result
+
+                                lifecycleScope.launch {
+                                    try {
+                                        com.craysafe.api.ApiClient.apiService.saveFcmToken(
+                                            "Bearer ${sessionManager.getToken()}",
+                                            fcmToken
+                                        )
+                                    } catch (e: Exception) {
+
+                                    }
+                                }
+                            }
+                        }
                 }
                 is LoginResult.Error -> {
                     Toast.makeText(this, "❌ ${result.message}", Toast.LENGTH_LONG).show()

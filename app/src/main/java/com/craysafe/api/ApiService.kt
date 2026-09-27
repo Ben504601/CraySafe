@@ -11,6 +11,10 @@ import com.craysafe.api.models.DashboardResponse
 import com.craysafe.api.models.PairTankResponse
 import com.craysafe.api.models.TankDetailResponse
 import com.craysafe.api.models.SwitchModeResponse
+import com.craysafe.api.models.AlertsResponse
+import com.craysafe.api.models.MarkAlertResponse
+import com.craysafe.api.models.BaseResponse
+
 
 interface ApiService {
 
@@ -57,4 +61,22 @@ interface ApiService {
         @Path("id") tankId: Int,
         @Field("mode") mode: String
     ): SwitchModeResponse
+
+    @GET("alerts")
+    suspend fun getAlerts(
+        @Header("Authorization") token: String
+    ): AlertsResponse
+
+    @POST("alerts/{id}/read")
+    suspend fun markAlertRead(
+        @Header("Authorization") token: String,
+        @Path("id") alertId: Int
+    ): MarkAlertResponse
+
+    @FormUrlEncoded
+    @POST("fcm-token")
+    suspend fun saveFcmToken(
+        @Header("Authorization") token: String,
+        @Field("fcm_token") fcmToken: String
+    ): BaseResponse
 }

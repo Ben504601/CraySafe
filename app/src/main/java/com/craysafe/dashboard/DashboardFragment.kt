@@ -89,10 +89,6 @@ class DashboardFragment : Fragment() {
             }
         }
 
-        viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
-            // Optional: show progress
-        }
-
         viewModel.error.observe(viewLifecycleOwner) { error ->
             android.widget.Toast.makeText(
                 requireContext(),
