@@ -4,56 +4,88 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp">
+    android:background="@color/background">
 
+    <!-- Header -->
     <LinearLayout
-        android:id="@+id/contentLayout"
+        android:id="@+id/headerLayout"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent">
+        android:padding="@dimen/space_md"
+        android:paddingBottom="@dimen/space_sm"
+        app:layout_constraintTop_toTopOf="parent">
 
         <TextView
+            style="@style/Text.H2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Your Tanks"
-            android:textSize="20sp"
-            android:textStyle="bold" />
+            android:text="Your Tanks" />
 
         <TextView
+            style="@style/Text.BodyMuted"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Real-time water quality monitoring"
-            android:textSize="14sp"
-            android:textColor="@android:color/darker_gray"
-            android:layout_marginBottom="16dp" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rvTanks"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:visibility="gone" />
-
-        <TextView
-            android:id="@+id/tvEmptyState"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="No tanks connected.\nTap the + button to add one."
-            android:textAlignment="center"
-            android:gravity="center"
-            android:textSize="16sp"
-            android:visibility="visible" />
-
+            android:layout_marginTop="2dp" />
     </LinearLayout>
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvTanks"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:paddingHorizontal="@dimen/space_md"
+        android:paddingBottom="@dimen/space_lg"
+        android:clipToPadding="false"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/headerLayout"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+    <!-- Empty state -->
+    <LinearLayout
+        android:id="@+id/emptyStateLayout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="@dimen/space_lg"
+        app:layout_constraintTop_toBottomOf="@id/headerLayout"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <ImageView
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:src="@drawable/ic_dashboard"
+            android:alpha="0.3"
+            app:tint="@color/text_tertiary"
+            android:contentDescription="@string/app_name" />
+
+        <TextView
+            style="@style/Text.H3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="No tanks yet"
+            android:layout_marginTop="@dimen/space_md" />
+
+        <TextView
+            style="@style/Text.BodyMuted"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Tap the + button to add your first tank"
+            android:gravity="center"
+            android:layout_marginTop="@dimen/space_xs" />
+    </LinearLayout>
+
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/fabAddTank"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="24dp"
-        android:src="@drawable/ic_add"
-        app:backgroundTint="@color/purple_500"
+        android:layout_margin="@dimen/space_md"
+        android:text="Add Tank"
+        android:textColor="@color/white"
+        app:icon="@drawable/ic_add"
+        app:iconTint="@color/white"
+        app:backgroundTint="@color/primary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 

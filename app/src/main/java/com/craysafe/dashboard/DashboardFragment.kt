@@ -81,10 +81,10 @@ class DashboardFragment : Fragment() {
         viewModel.dashboardData.observe(viewLifecycleOwner) { data ->
             if (data.isNotEmpty()) {
                 adapter.submitList(data)  // ✅ Now works
-                binding.tvEmptyState.visibility = View.GONE
+                binding.emptyStateLayout.visibility = View.GONE
                 binding.rvTanks.visibility = View.VISIBLE
             } else {
-                binding.tvEmptyState.visibility = View.VISIBLE
+                binding.emptyStateLayout.visibility = View.VISIBLE
                 binding.rvTanks.visibility = View.GONE
             }
         }

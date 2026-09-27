@@ -4,85 +4,108 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="12dp"
-    app:cardCornerRadius="12dp"
-    app:cardElevation="4dp">
+    android:layout_marginBottom="@dimen/space_md"
+    app:cardCornerRadius="@dimen/radius_md"
+    app:cardElevation="0dp"
+    app:strokeColor="@color/card_stroke"
+    app:strokeWidth="1dp"
+    android:clickable="true"
+    android:focusable="true"
+    app:rippleColor="@color/surface_variant">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="16dp">
+        android:padding="@dimen/space_md">
 
+        <!-- Tank name -->
         <TextView
             android:id="@+id/tvTankName"
+            style="@style/Text.H3"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="Tank 1"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toStartOf="@id/tvMode"
+            android:text="Main Tank"
+            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintEnd_toStartOf="@id/tvMode" />
 
+        <!-- Mode pill -->
         <TextView
             android:id="@+id/tvMode"
+            style="@style/StatusPill"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Growing"
-            android:textColor="@color/purple_500"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:textColor="@color/primary"
+            android:background="@drawable/bg_pill_primary"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <!-- Status row -->
+        <View
+            android:id="@+id/statusDot"
+            android:layout_width="10dp"
+            android:layout_height="10dp"
+            android:background="@drawable/bg_status_dot"
+            android:layout_marginTop="6dp"
+            app:layout_constraintTop_toBottomOf="@id/tvTankName"
+            app:layout_constraintStart_toStartOf="parent" />
 
         <TextView
             android:id="@+id/tvStatus"
-            android:layout_width="wrap_content"
+            style="@style/Text.Caption"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:text="Safe"
-            android:textSize="14sp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tvTankName" />
+            android:text="All readings are normal"
+            android:layout_marginStart="6dp"
+            app:layout_constraintStart_toEndOf="@id/statusDot"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/statusDot"
+            app:layout_constraintBottom_toBottomOf="@id/statusDot" />
 
+        <!-- Divider -->
         <View
-            android:id="@+id/viewDivider"
-            android:layout_width="match_parent"
+            android:id="@+id/divider"
+            android:layout_width="0dp"
             android:layout_height="1dp"
-            android:layout_marginTop="12dp"
-            android:background="@android:color/darker_gray"
-            app:layout_constraintTop_toBottomOf="@id/tvStatus" />
+            android:background="@color/divider"
+            android:layout_marginTop="@dimen/space_md"
+            app:layout_constraintTop_toBottomOf="@id/tvStatus"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
+        <!-- Sensor readings row -->
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
             android:orientation="horizontal"
-            android:weightSum="3"
-            app:layout_constraintTop_toBottomOf="@id/viewDivider">
+            android:baselineAligned="false"
+            android:layout_marginTop="@dimen/space_md"
+            app:layout_constraintTop_toBottomOf="@id/divider"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
 
             <!-- Temperature -->
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:gravity="center"
                 android:orientation="vertical">
 
                 <TextView
+                    style="@style/Text.Label"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Temperature"
-                    android:textSize="12sp"
-                    android:textColor="@android:color/darker_gray" />
+                    android:text="Temp"
+                    android:textColor="@color/text_tertiary" />
 
                 <TextView
                     android:id="@+id/tvTemperature"
+                    style="@style/Text.H3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="25.0°C"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
+                    android:text="25.5°"
+                    android:layout_marginTop="2dp" />
             </LinearLayout>
 
             <!-- pH -->
@@ -90,23 +113,22 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:gravity="center"
                 android:orientation="vertical">
 
                 <TextView
+                    style="@style/Text.Label"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="pH"
-                    android:textSize="12sp"
-                    android:textColor="@android:color/darker_gray" />
+                    android:textColor="@color/text_tertiary" />
 
                 <TextView
                     android:id="@+id/tvPh"
+                    style="@style/Text.H3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="7.4"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
+                    android:layout_marginTop="2dp" />
             </LinearLayout>
 
             <!-- Turbidity -->
@@ -114,26 +136,23 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:gravity="center"
                 android:orientation="vertical">
 
                 <TextView
+                    style="@style/Text.Label"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Turbidity"
-                    android:textSize="12sp"
-                    android:textColor="@android:color/darker_gray" />
+                    android:textColor="@color/text_tertiary" />
 
                 <TextView
                     android:id="@+id/tvTurbidity"
+                    style="@style/Text.H3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="25 NTU"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
+                    android:text="15"
+                    android:layout_marginTop="2dp" />
             </LinearLayout>
-
         </LinearLayout>
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>
