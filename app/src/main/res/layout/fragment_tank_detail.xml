@@ -12,7 +12,7 @@
         android:orientation="vertical"
         android:padding="@dimen/space_md">
 
-        <!-- Tank Name & Mode -->
+        <!-- ═══ SECTION 1: Tank Header ═══ -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -27,6 +27,7 @@
                 android:orientation="vertical"
                 android:padding="@dimen/space_md">
 
+                <!-- Tank name -->
                 <TextView
                     android:id="@+id/tvTankName"
                     style="@style/Text.H2"
@@ -34,6 +35,7 @@
                     android:layout_height="wrap_content"
                     android:text="Main Tank" />
 
+                <!-- Mode row -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -61,12 +63,17 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Switch"
-                        android:minWidth="0dp" />
+                        android:minWidth="0dp"
+                        android:minHeight="0dp"
+                        android:paddingStart="@dimen/space_md"
+                        android:paddingEnd="@dimen/space_md"
+                        android:paddingTop="8dp"
+                        android:paddingBottom="8dp" />
                 </LinearLayout>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- Sensor Readings Grid -->
+        <!-- ═══ SECTION 2: Current Readings ═══ -->
         <TextView
             style="@style/Text.Label"
             android:layout_width="wrap_content"
@@ -82,7 +89,7 @@
             android:orientation="horizontal"
             android:baselineAligned="false">
 
-            <!-- Temp card -->
+            <!-- Temperature -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -110,12 +117,12 @@
                         style="@style/Text.H3"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="25.5°"
-                        android:layout_marginTop="2dp" />
+                        android:text="—"
+                        android:layout_marginTop="4dp" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- pH card -->
+            <!-- pH -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -143,12 +150,12 @@
                         style="@style/Text.H3"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="7.4"
-                        android:layout_marginTop="2dp" />
+                        android:text="—"
+                        android:layout_marginTop="4dp" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Turbidity card -->
+            <!-- Turbidity -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -175,13 +182,13 @@
                         style="@style/Text.H3"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="15"
-                        android:layout_marginTop="2dp" />
+                        android:text="—"
+                        android:layout_marginTop="4dp" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
         </LinearLayout>
 
-        <!-- Predictive Insight -->
+        <!-- ═══ SECTION 3: Predictive Insight ═══ -->
         <TextView
             style="@style/Text.Label"
             android:layout_width="wrap_content"
@@ -192,6 +199,7 @@
             android:layout_marginBottom="@dimen/space_sm" />
 
         <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardPrediction"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:cardCornerRadius="@dimen/radius_md"
@@ -205,64 +213,113 @@
                 android:orientation="vertical"
                 android:padding="@dimen/space_md">
 
-                <TextView
-                    android:id="@+id/tvTempTTD"
-                    style="@style/Text.Body"
+                <!-- Temperature TTD -->
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Temperature: Safe"
-                    android:padding="@dimen/space_xs" />
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingVertical="@dimen/space_xs">
 
-                <TextView
-                    android:id="@+id/tvPhTTD"
-                    style="@style/Text.Body"
+                    <TextView
+                        style="@style/Text.Body"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="🌡️  Temperature" />
+
+                    <TextView
+                        android:id="@+id/tvTempTTD"
+                        style="@style/Text.Body"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Safe"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <!-- pH TTD -->
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="pH: Safe"
-                    android:padding="@dimen/space_xs" />
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingVertical="@dimen/space_xs">
 
-                <TextView
-                    android:id="@+id/tvTurbidityTTD"
-                    style="@style/Text.Body"
+                    <TextView
+                        style="@style/Text.Body"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="🧪  pH" />
+
+                    <TextView
+                        android:id="@+id/tvPhTTD"
+                        style="@style/Text.Body"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Safe"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <!-- Turbidity TTD -->
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Turbidity: Safe"
-                    android:padding="@dimen/space_xs" />
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingVertical="@dimen/space_xs">
 
+                    <TextView
+                        style="@style/Text.Body"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="💧  Turbidity" />
+
+                    <TextView
+                        android:id="@+id/tvTurbidityTTD"
+                        style="@style/Text.Body"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Safe"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <!-- Divider -->
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:background="@color/divider"
                     android:layout_marginTop="@dimen/space_sm" />
 
+                <!-- Status + timestamp -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
+                    android:gravity="center_vertical"
                     android:paddingTop="@dimen/space_sm">
 
                     <TextView
                         android:id="@+id/tvStatus"
                         style="@style/Text.Body"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Status: Safe" />
-
-                    <View
                         android:layout_width="0dp"
-                        android:layout_height="1dp"
-                        android:layout_weight="1" />
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Status: Safe"
+                        android:textStyle="bold" />
 
                     <TextView
                         android:id="@+id/tvLastUpdated"
                         style="@style/Text.Caption"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Updated just now" />
+                        android:text="—" />
                 </LinearLayout>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
+        <!-- Loading -->
         <ProgressBar
             android:id="@+id/progressBar"
             android:layout_width="24dp"
@@ -270,5 +327,6 @@
             android:layout_gravity="center"
             android:visibility="gone"
             android:layout_marginTop="@dimen/space_md" />
+
     </LinearLayout>
 </ScrollView>

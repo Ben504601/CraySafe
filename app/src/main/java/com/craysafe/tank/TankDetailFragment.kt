@@ -1,4 +1,3 @@
-// TankDetailFragment.kt
 package com.craysafe.tank
 
 import android.os.Bundle
@@ -6,27 +5,26 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.craysafe.R
+import com.craysafe.api.models.TankDetailData
 import com.craysafe.databinding.FragmentTankDetailBinding
 import com.craysafe.utils.SessionManager
 
 class TankDetailFragment : Fragment() {
 
-    // View Binding: type-safe access to UI elements
     private var _binding: FragmentTankDetailBinding? = null
     private val binding get() = _binding!!
 
     private lateinit var viewModel: TankDetailViewModel
     private lateinit var sessionManager: SessionManager
-
-    // The TankID passed from Dashboard
     private var tankId: Int = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        // Get TankID from arguments (passed from Dashboard)
         arguments?.let {
             tankId = it.getInt("tank_id", -1)
         }
@@ -50,22 +48,21 @@ class TankDetailFragment : Fragment() {
         setupObservers()
         setupListeners()
 
-        // Load data
         if (tankId != -1) {
             viewModel.loadTankDetail(tankId, sessionManager)
         } else {
-            Toast.makeText(requireContext(), "No tank ID received", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), "No tank selected", Toast.LENGTH_SHORT).show()
         }
     }
 
     private fun setupObservers() {
-        // Observe tank data changes
-        viewModel.data.observe(viewLifecycleOwner) { tankData ->
-            tankData?.let { updateUI(it) }
+        viewModel.data.observe(viewLifecycleOwner) { data ->
+            data?.let { updateUI(it) }
         }
 
         viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
             binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
+            binding.btnSwitchMode.isEnabled = !isLoading
         }
 
         viewModel.error.observe(viewLifecycleOwner) { error ->
@@ -74,68 +71,130 @@ class TankDetailFragment : Fragment() {
             }
         }
 
-        // Switch mode result
         viewModel.switchResult.observe(viewLifecycleOwner) { message ->
             message?.let {
                 Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
             }
         }
-
     }
 
-    private fun updateUI(data: com.craysafe.api.models.TankDetailData) {
+    private fun updateUI(data: TankDetailData) {
+        // Header
         binding.tvTankName.text = data.Tankname ?: "Tank #${data.TankID}"
-        binding.tvMode.text = "Mode: ${data.Mode ?: "Growing"}"
-        binding.tvTemperature.text = "${data.Temperature ?: 0.0}°C"
-        binding.tvPh.text = "${data.Ph_Level ?: 0.0}"
-        binding.tvTurbidity.text = "${data.Turbidity ?: 0.0} NTU"
+        binding.tvMode.text = "${data.Mode ?: "Growing"} mode"
+
+        // Readings — use em-dash for missing
+        binding.tvTemperature.text = formatReading(data.Temperature, "°")
+        binding.tvPh.text = formatReading(data.Ph_Level, "")
+        binding.tvTurbidity.text = formatReading(data.Turbidity, "")
+
+        // TTD values
+        binding.tvTempTTD.text = formatTTD(data.TemperatureTTD)
+        binding.tvPhTTD.text = formatTTD(data.PhTTD)
+        binding.tvTurbidityTTD.text = formatTTD(data.TurbidityTTD)
+
+        // Color-code TTD text
+        binding.tvTempTTD.setTextColor(ttdColor(data.TemperatureTTD))
+        binding.tvPhTTD.setTextColor(ttdColor(data.PhTTD))
+        binding.tvTurbidityTTD.setTextColor(ttdColor(data.TurbidityTTD))
+
+        // Status
         binding.tvStatus.text = "Status: ${data.Status ?: "Unknown"}"
-        binding.tvTempTTD.text = "\uD83C\uDF21\uFE0F Temperature: ${formatTTD(data.TemperatureTTD)}"
-        binding.tvPhTTD.text = "\uD83E\uDDEA pH: ${formatTTD(data.PhTTD)}"
-        binding.tvTurbidityTTD.text = "\uD83D\uDCA7 Turbidity: ${formatTTD(data.TurbidityTTD)}"
-        binding.tvLastUpdated.text = "Last Updated: ${data.LastUpdated ?: "N/A"}"
+        binding.tvStatus.setTextColor(statusColor(data.Status))
 
-        // Status color
-        val colorRes = when (data.Status?.lowercase()) {
-            "safe" -> android.R.color.holo_green_dark
-            "warning" -> android.R.color.holo_orange_dark
-            "critical" -> android.R.color.holo_red_dark
-            else -> android.R.color.darker_gray
-        }
-        binding.tvStatus.setTextColor(
-            androidx.core.content.ContextCompat.getColor(requireContext(), colorRes)
-        )
-    }
+        // Last updated
+        binding.tvLastUpdated.text = "Updated ${formatTimestamp(data.LastUpdated)}"
 
-    // format minutes into a readable string
-    private fun formatTTD(minutes: Long?): String {
-        if (minutes == null) return "Safe"
-        return when {
-            minutes < 60 -> "⚠ ${minutes} min"
-            minutes < 24 * 60 -> "⚠ ${minutes / 60} hr"
-            else -> "⚠ ${minutes / (60 * 24)} days"
-        }
+        // Mode pill background — color depends on mode
+        val pillBg = if (data.Mode == "Breeding") R.color.warning_bg else R.color.info_bg
+        binding.tvMode.setBackgroundColor(ContextCompat.getColor(requireContext(), pillBg))
     }
 
     private fun setupListeners() {
         binding.btnSwitchMode.setOnClickListener {
-            showModeConfirmationDialog()
+            val current = viewModel.data.value?.Mode ?: "Growing"
+            val next = if (current == "Growing") "Breeding" else "Growing"
+            confirmModeSwitch(current, next)
         }
     }
 
-    private fun showModeConfirmationDialog() {
-        val currentData = viewModel.data.value ?: return
-        val currentMode = currentData.Mode ?: "Growing"
-        val newMode = if (currentMode == "Growing") "Breeding" else "Growing"
-
-        androidx.appcompat.app.AlertDialog.Builder(requireContext())
-            .setTitle("Switch Mode?")
-            .setMessage("Change from $currentMode to $newMode?\n\nThe safety thresholds will be updated for the new mode.")
+    private fun confirmModeSwitch(current: String, next: String) {
+        AlertDialog.Builder(requireContext())
+            .setTitle("Switch to $next mode?")
+            .setMessage(
+                "The safety thresholds will change. Current mode: $current.\n\n" +
+                        "Readings that were previously safe might become warnings (and vice versa)."
+            )
             .setPositiveButton("Switch") { _, _ ->
-                viewModel.switchMode(tankId, newMode, sessionManager)
+                viewModel.switchMode(tankId, next, sessionManager)
             }
             .setNegativeButton("Cancel", null)
             .show()
+    }
+
+    // ─── Formatting helpers ───
+
+    private fun formatReading(value: Double?, suffix: String): String {
+        if (value == null) return "—"
+        val num = if (value % 1.0 == 0.0) value.toInt().toString() else value.toString()
+        return "$num$suffix"
+    }
+
+    /**
+     * Format TTD minutes into a friendly string and pick the color:
+     *  - null         → "Safe" (green)
+     *  - < 60 min     → "Critical in 45 min" (red)
+     *  - < 4 hours    → "Warning in 2 hr" (orange)
+     *  - < 24 hours   → "Predicting in 8 hr" (orange)
+     *  - >= 24 hours  → "Safe for 2 days" (green)
+     */
+    private fun formatTTD(minutes: Long?): String {
+        if (minutes == null) return "Safe"
+        return when {
+            minutes < 60 -> "In $minutes min"
+            minutes < 24 * 60 -> "In ${minutes / 60} hr"
+            else -> "In ${minutes / (24 * 60)} days"
+        }
+    }
+
+    private fun ttdColor(minutes: Long?): Int {
+        val res = when {
+            minutes == null -> R.color.safe
+            minutes < 60 -> R.color.critical
+            minutes < 4 * 60 -> R.color.warning
+            minutes < 24 * 60 -> R.color.warning
+            else -> R.color.safe
+        }
+        return ContextCompat.getColor(requireContext(), res)
+    }
+
+    private fun statusColor(status: String?): Int {
+        val res = when (status?.lowercase()) {
+            "safe" -> R.color.safe
+            "warning" -> R.color.warning
+            "critical" -> R.color.critical
+            else -> R.color.text_secondary
+        }
+        return ContextCompat.getColor(requireContext(), res)
+    }
+
+    private fun formatTimestamp(raw: String?): String {
+        if (raw.isNullOrBlank()) return "—"
+        return try {
+            val sdf = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.US)
+            sdf.timeZone = java.util.TimeZone.getTimeZone("UTC")
+            val parsed = sdf.parse(raw) ?: return raw
+
+            val diffMin = (System.currentTimeMillis() - parsed.time) / 60_000
+            when {
+                diffMin < 1 -> "just now"
+                diffMin < 60 -> "${diffMin}m ago"
+                diffMin < 24 * 60 -> "${diffMin / 60}h ago"
+                else -> "${diffMin / (24 * 60)}d ago"
+            }
+        } catch (_: Exception) {
+            raw
+        }
     }
 
     override fun onDestroyView() {
