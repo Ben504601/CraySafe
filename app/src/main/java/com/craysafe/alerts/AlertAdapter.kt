@@ -1,8 +1,11 @@
 package com.craysafe.alerts
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.craysafe.R
 import com.craysafe.api.models.Alert
 import com.craysafe.databinding.ItemAlertBinding
 
@@ -23,7 +26,7 @@ class AlertAdapter(
             parent,
             false
         )
-        return  AlertViewHolder(binding, onAlertClick)
+        return AlertViewHolder(binding, onAlertClick)
     }
 
     override fun onBindViewHolder(holder: AlertViewHolder, position: Int) {
@@ -39,26 +42,50 @@ class AlertAdapter(
 
         fun bind(alert: Alert) {
             binding.apply {
-                val parts =alert.alert_type.split(":")
-                val category = parts.getOrNull(0) ?: ""
+                // Parse "Critical:Temperature"
+                val parts = alert.alert_type.split(":")
+                val category = parts.getOrNull(0) ?: "Alert"
                 val parameter = parts.getOrNull(1) ?: ""
 
-                tvAlertType.text = when (category) {
-                    "Critical" -> "\uD83D\uDD34 $parameter - Critical"
-                    "Warning" -> "\uD83D\uDFE0 $parameter - Warning"
-                    "Time-to-Danger" -> "\uD83D\uDFE1 $parameter - Prediction"
-                    else -> alert.alert_type
+                // Colors by category
+                val (categoryColorRes, stripColorRes) = when (category) {
+                    "Critical" -> R.color.critical to R.color.critical
+                    "Warning" -> R.color.warning to R.color.warning
+                    "Time-to-Danger" -> R.color.info to R.color.info
+                    else -> R.color.text_tertiary to R.color.text_tertiary
                 }
+                val categoryColor = ContextCompat.getColor(root.context, categoryColorRes)
 
+                tvCategory.text = category.uppercase()
+                tvCategory.setTextColor(categoryColor)
+
+                tvTitle.text = parameter.ifEmpty { category }
+
+                // Message: strip the emoji prefix if present
                 tvMessage.text = alert.message
-                tvDate.text = formatDate(alert.alert_date)
+                    .replace("🔴 ", "")
+                    .replace("🟠 ", "")
+                    .replace("🟡 ", "")
 
-                val card = root as com.google.android.material.card.MaterialCardView
+                tvDate.text = formatRelativeDate(alert.alert_date)
 
+                // Severity strip on the left edge
+                severityStrip.setBackgroundColor(
+                    ContextCompat.getColor(root.context, stripColorRes)
+                )
+
+                // Unread indicator
+                unreadRow.visibility = if (alert.status == "unread") View.VISIBLE else View.GONE
+
+                // Card appearance: unread cards have a slight tint
                 if (alert.status == "unread") {
-                    card.setCardBackgroundColor(0xFFF5F5F5.toInt())
+                    root.setCardBackgroundColor(
+                        ContextCompat.getColor(root.context, R.color.surface)
+                    )
                 } else {
-                    card.setCardBackgroundColor(0xFFFFFFFF.toInt())
+                    root.setCardBackgroundColor(
+                        ContextCompat.getColor(root.context, R.color.background)
+                    )
                 }
 
                 root.setOnClickListener {
@@ -67,36 +94,22 @@ class AlertAdapter(
             }
         }
 
-        private fun formatDate(rawDate: String): String {
+        private fun formatRelativeDate(raw: String): String {
             return try {
-                val formats = listOf(
-                    "yyyy-MM-dd HH:mm:ss",
-                    "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
-                    "yyy-MM-dd'T'HH:mm:ss'Z'"
-                )
-                var parsed: java.util.Date? = null
-                for (fmt in formats) {
-                    try {
-                        val sdf = java.text.SimpleDateFormat(fmt, java.util.Locale.US)
-                        sdf.timeZone = java.util.TimeZone.getTimeZone("UTC")
-                        parsed = sdf.parse(rawDate)
-                        if (parsed != null) break
-                    } catch (_: Exception) {}
-                }
-                if (parsed == null) return rawDate
+                val sdf = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.US)
+                sdf.timeZone = java.util.TimeZone.getTimeZone("UTC")
+                val parsed = sdf.parse(raw) ?: return raw
 
-                val diffMs = System.currentTimeMillis() - parsed.time
-                val diffMin = diffMs / 60_000
+                val diffMin = (System.currentTimeMillis() - parsed.time) / 60_000
                 when {
                     diffMin < 1 -> "just now"
-                    diffMin < 60 -> "$diffMin min ago"
-                    diffMin < 24 * 60 -> "${diffMin / 60} hr ago"
+                    diffMin < 60 -> "${diffMin}m ago"
+                    diffMin < 24 * 60 -> "${diffMin / 60}h ago"
                     diffMin < 48 * 60 -> "yesterday"
-                    diffMin < 30 * 24 * 60 -> "${diffMin / (24 * 60)} days ago"
-                    else -> rawDate.substringBefore(" ")
+                    else -> "${diffMin / (24 * 60)}d ago"
                 }
-            } catch (e: Exception) {
-                rawDate
+            } catch (_: Exception) {
+                raw
             }
         }
     }

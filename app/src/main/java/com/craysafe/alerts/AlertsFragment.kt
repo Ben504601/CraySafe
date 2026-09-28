@@ -56,17 +56,21 @@ class AlertsFragment : Fragment() {
         viewModel.alerts.observe(viewLifecycleOwner) { alerts ->
             if (alerts.isNotEmpty()) {
                 adapter.submitList(alerts)
-                binding.tvEmptyState.visibility = View.GONE
+                binding.emptyStateLayout.visibility = View.GONE
                 binding.rvAlerts.visibility = View.VISIBLE
             } else {
-                binding.tvEmptyState.visibility = View.VISIBLE
+                binding.emptyStateLayout.visibility = View.VISIBLE
                 binding.rvAlerts.visibility = View.GONE
             }
         }
 
         viewModel.unreadCount.observe(viewLifecycleOwner) { count ->
-            binding.tvUnreadCount.text = "$count unread"
+            binding.tvUnreadCount.text = if (count == 0) "No unread alerts" else "$count unread"
             (activity as? com.craysafe.MainActivity)?.updateAlertsBadge(count)
+        }
+
+        viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
+            binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
         }
 
         viewModel.error.observe(viewLifecycleOwner) { error ->

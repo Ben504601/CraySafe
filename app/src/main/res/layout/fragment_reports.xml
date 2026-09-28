@@ -1,32 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp">
+    android:background="@color/background">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Reports"
-        android:textSize="20sp"
-        android:textStyle="bold" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Historical water quality data"
-        android:textSize="14sp"
-        android:textColor="@android:color/darker_gray"
-        android:layout_marginBottom="16dp" />
-
-    <TextView
+    <LinearLayout
+        android:id="@+id/headerLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Reports coming soon!\nSelect a tank to view history"
-        android:textAlignment="center"
-        android:gravity="center"
-        android:textSize="16sp"
-        android:textColor="@android:color/darker_gray" />
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/space_md"
+        android:paddingBottom="@dimen/space_sm"
+        app:layout_constraintTop_toTopOf="parent">
 
-</LinearLayout>
+        <TextView
+            style="@style/Text.H2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Reports" />
+
+        <TextView
+            style="@style/Text.BodyMuted"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Historical trends and analysis"
+            android:layout_marginTop="2dp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="@dimen/space_lg"
+        app:layout_constraintTop_toBottomOf="@id/headerLayout"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <ImageView
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:src="@drawable/ic_reports"
+            android:alpha="0.3"
+            app:tint="@color/primary"
+            android:contentDescription="Reports" />
+
+        <TextView
+            style="@style/Text.H3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Coming soon"
+            android:layout_marginTop="@dimen/space_md" />
+
+        <TextView
+            style="@style/Text.BodyMuted"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Historical data charts and trend analysis\nare in development."
+            android:gravity="center"
+            android:layout_marginTop="@dimen/space_xs" />
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="@dimen/space_sm"
+    app:cardCornerRadius="@dimen/radius_md"
+    app:cardElevation="0dp"
+    app:strokeColor="@color/card_stroke"
+    app:strokeWidth="1dp"
+    android:clickable="true"
+    android:focusable="true"
+    app:rippleColor="@color/surface_variant">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/space_md">
+
+        <!-- Category pill -->
+        <TextView
+            android:id="@+id/tvCategory"
+            style="@style/StatusPill"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Hardware"
+            android:textColor="@color/primary"
+            android:background="@drawable/bg_pill_primary" />
+
+        <!-- Issue title -->
+        <TextView
+            android:id="@+id/tvIssueTitle"
+            style="@style/Text.H3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="My sensor is reading odd values"
+            android:layout_marginTop="@dimen/space_sm" />
+
+        <!-- Solution (collapsed by default) -->
+        <TextView
+            android:id="@+id/tvSolution"
+            style="@style/Text.Body"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Steps to fix..."
+            android:layout_marginTop="@dimen/space_sm"
+            android:visibility="gone" />
+
+        <!-- Expand hint -->
+        <TextView
+            android:id="@+id/tvHint"
+            style="@style/Text.Caption"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Tap to expand"
+            android:layout_marginTop="@dimen/space_sm" />
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>

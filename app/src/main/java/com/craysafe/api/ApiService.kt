@@ -6,6 +6,7 @@ import retrofit2.http.Path
 import retrofit2.http.POST
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
+import retrofit2.http.Query
 import com.craysafe.api.models.LoginResponse
 import com.craysafe.api.models.DashboardResponse
 import com.craysafe.api.models.PairTankResponse
@@ -14,6 +15,8 @@ import com.craysafe.api.models.SwitchModeResponse
 import com.craysafe.api.models.AlertsResponse
 import com.craysafe.api.models.MarkAlertResponse
 import com.craysafe.api.models.BaseResponse
+import com.craysafe.api.models.DiagnosticResponse
+import com.craysafe.api.models.UnreadCountResponse
 
 
 interface ApiService {
@@ -79,4 +82,16 @@ interface ApiService {
         @Header("Authorization") token: String,
         @Field("fcm_token") fcmToken: String
     ): BaseResponse
+
+    @GET("support/qa")
+    suspend fun getDiagnosticQnA(
+        @Header("Authorization") token: String,
+        @Query("search") search: String? = null,
+        @Query("category") category: String? = null
+    ): DiagnosticResponse
+
+    @GET("alerts/unread-count")
+    suspend fun getUnreadAlertCount(
+        @Header("Authorization") token: String
+    ): UnreadCountResponse
 }

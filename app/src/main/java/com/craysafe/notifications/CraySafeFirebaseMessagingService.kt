@@ -61,6 +61,10 @@ class CraySafeFirebaseMessagingService : FirebaseMessagingService() {
         val priority = message.data["priority"] ?: "default"
 
         showNotification(title, body, alertId, priority)
+
+        val intent = Intent("com.craysafe.REFRESH_BADGE")
+        intent.setPackage(packageName)
+        sendBroadcast(intent)
     }
 
     private fun showNotification(title: String, body: String, alertId: Int, priority: String) {

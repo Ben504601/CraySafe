@@ -2,12 +2,18 @@ package com.craysafe
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.navigation.ui.setupWithNavController
+import com.craysafe.api.ApiClient
 import com.craysafe.notifications.NotificationHelper
+import com.craysafe.utils.SessionManager
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
+
+    private val sessionManager: SessionManager by lazy { SessionManager(this) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,6 +36,39 @@ class MainActivity : AppCompatActivity() {
                     arrayOf(android.Manifest.permission.POST_NOTIFICATIONS),
                     1001
                 )
+            }
+        }
+
+        val badgeReceiver = object : android.content.BroadcastReceiver() {
+            override fun onReceive(context: android.content.Context?, intent: android.content.Intent?) {
+                refreshAlertsBadge()
+            }
+        }
+        androidx.core.content.ContextCompat.registerReceiver(
+            this,
+            badgeReceiver,
+            android.content.IntentFilter("com.craysafe.REFRESH_BADGE"),
+            androidx.core.content.ContextCompat.RECEIVER_NOT_EXPORTED
+        )
+    }
+
+    override fun onStart() {
+        super.onStart()
+        refreshAlertsBadge()
+    }
+
+    fun refreshAlertsBadge() {
+        if (!sessionManager.isLoggedIn()) return
+        val token = sessionManager.getToken() ?: return
+
+        lifecycleScope.launch {
+            try {
+                val response = ApiClient.apiService.getUnreadAlertCount("Bearer $token")
+                if (response.success) {
+                    updateAlertsBadge(response.count)
+                }
+            } catch (_: Exception) {
+
             }
         }
     }

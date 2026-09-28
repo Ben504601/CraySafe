@@ -1,42 +1,91 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp">
+    android:background="@color/background">
 
-    <TextView
-        android:layout_width="wrap_content"
+    <!-- Header -->
+    <LinearLayout
+        android:id="@+id/headerLayout"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Alerts"
-        android:textSize="20sp"
-        android:textStyle="bold" />
+        android:orientation="vertical"
+        android:padding="@dimen/space_md"
+        android:paddingBottom="@dimen/space_sm"
+        app:layout_constraintTop_toTopOf="parent">
 
-    <TextView
-        android:id="@+id/tvUnreadCount"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="0 unread"
-        android:textSize="14sp"
-        android:textColor="@android:color/darker_gray"
-        android:layout_marginBottom="16dp" />
+        <TextView
+            style="@style/Text.H2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Alerts" />
 
+        <TextView
+            android:id="@+id/tvUnreadCount"
+            style="@style/Text.BodyMuted"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="No unread alerts"
+            android:layout_marginTop="2dp" />
+    </LinearLayout>
+
+    <!-- Alerts list -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvAlerts"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:visibility="gone" />
+        android:paddingHorizontal="@dimen/space_md"
+        android:paddingBottom="@dimen/space_md"
+        android:clipToPadding="false"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/headerLayout"
+        app:layout_constraintBottom_toBottomOf="parent" />
 
-    <TextView
-        android:id="@+id/tvEmptyState"
+    <!-- Empty state -->
+    <LinearLayout
+        android:id="@+id/emptyStateLayout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:text="No alerts yet.\nYour tanks are healthy!"
-        android:textAlignment="center"
         android:gravity="center"
-        android:textSize="16sp"
-        android:textColor="@android:color/darker_gray" />
+        android:orientation="vertical"
+        android:padding="@dimen/space_lg"
+        app:layout_constraintTop_toBottomOf="@id/headerLayout"
+        app:layout_constraintBottom_toBottomOf="parent">
 
-</LinearLayout>
+        <ImageView
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:src="@drawable/ic_notifications"
+            android:alpha="0.3"
+            app:tint="@color/safe"
+            android:contentDescription="No alerts" />
+
+        <TextView
+            style="@style/Text.H3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="All clear"
+            android:layout_marginTop="@dimen/space_md" />
+
+        <TextView
+            style="@style/Text.BodyMuted"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Your tanks are healthy.\nWe'll notify you when something needs attention."
+            android:gravity="center"
+            android:layout_marginTop="@dimen/space_xs" />
+    </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/headerLayout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="@dimen/space_md" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
