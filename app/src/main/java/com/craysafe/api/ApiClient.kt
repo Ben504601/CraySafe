@@ -8,13 +8,7 @@ import java.util.concurrent.TimeUnit
 
 object ApiClient {
 
-    // For Android Emulator: use 10.0.2.2 (localhost on host machine)
-    // For Real Phone: use your computer's IP (e.g., 192.168.1.100)
-    //private const val BASE_URL = "http://192.168.1.9:8000/api/"
-
-    // For USB Tethering IPv4 Address 10.176.30.170
-
-    private const val BASE_URL = "http://10.203.244.87:8000/api/"
+    private const val BASE_URL = "https://craysafe-api.onrender.com/api/"
 
     // Logging interceptor to see network calls in Logcat
     private val loggingInterceptor = HttpLoggingInterceptor().apply {
