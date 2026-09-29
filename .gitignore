@@ -17,21 +17,14 @@ release/
 build/
 
 # Gradle files
-.gradle/
 gradle/
-build/
 gradlew
 gradlew.bat
-local.properties
-*.iml
 *.hprof
-.idea/
 .cache/
-.DS_Store
 captures/
 .externalNativeBuild/
 .cxx/
-*.keystore
 
 # Android Studio
 *.iml
