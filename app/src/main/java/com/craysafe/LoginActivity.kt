@@ -12,6 +12,7 @@ import com.craysafe.auth.LoginResult
 import com.craysafe.auth.LoginViewModel
 import com.craysafe.databinding.ActivityLoginBinding
 import com.craysafe.utils.SessionManager
+import com.craysafe.api.ApiClient
 import kotlinx.coroutines.launch
 
 class LoginActivity : AppCompatActivity() {
@@ -38,6 +39,14 @@ class LoginActivity : AppCompatActivity() {
 
         observeViewModel()
         setupListeners()
+
+        lifecycleScope.launch {
+            try {
+                ApiClient.apiService.wakeUp()
+            } catch (_: Exception) {
+
+            }
+        }
     }
 
     private fun observeViewModel() {

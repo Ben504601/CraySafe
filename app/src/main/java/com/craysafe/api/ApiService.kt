@@ -94,4 +94,7 @@ interface ApiService {
     suspend fun getUnreadAlertCount(
         @Header("Authorization") token: String
     ): UnreadCountResponse
+
+    @GET("test")
+    suspend fun wakeUp(): retrofit2.Response<Any>
 }
