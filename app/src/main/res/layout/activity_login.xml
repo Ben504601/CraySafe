@@ -112,6 +112,19 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
+        <TextView
+            android:id="@+id/tvSlowHint"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Waking up server..."
+            android:textSize="12sp"
+            android:textColor="@color/text_secondary"
+            android:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@id/progressBar"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="4dp" />
+
         <!-- Register link -->
         <TextView
             android:id="@+id/tvRegister"

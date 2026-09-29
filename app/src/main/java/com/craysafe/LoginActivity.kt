@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
+import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
@@ -52,10 +53,21 @@ class LoginActivity : AppCompatActivity() {
     private fun observeViewModel() {
         viewModel.isLoading.observe(this) { isLoading ->
             binding.progressBar.visibility =
-                if (isLoading) android.view.View.VISIBLE else android.view.View.GONE
+                if (isLoading) View.VISIBLE else View.GONE
             binding.btnLogin.isEnabled = !isLoading
             binding.tilEmail.isEnabled = !isLoading
             binding.tilPassword.isEnabled = !isLoading
+
+            if (isLoading) {
+                binding.tvSlowHint.visibility = View.GONE
+                binding.root.postDelayed({
+                    if (viewModel.isLoading.value == true) {
+                        binding.tvSlowHint.visibility = View.VISIBLE
+                    }
+                }, 5000)
+            } else {
+                binding.tvSlowHint.visibility = View.GONE
+            }
         }
 
         viewModel.loginResult.observe(this) { result ->
@@ -129,7 +141,7 @@ class LoginActivity : AppCompatActivity() {
                     val fcmToken = task.result
                     lifecycleScope.launch {
                         try {
-                            com.craysafe.api.ApiClient.apiService.saveFcmToken(
+                            ApiClient.apiService.saveFcmToken(
                                 "Bearer ${sessionManager.getToken()}",
                                 fcmToken
                             )
