@@ -63,9 +63,6 @@ class AlertAdapter(
 
                 // Message: strip the emoji prefix if present
                 tvMessage.text = alert.message
-                    .replace("🔴 ", "")
-                    .replace("🟠 ", "")
-                    .replace("🟡 ", "")
 
                 tvDate.text = formatRelativeDate(alert.alert_date)
 
