@@ -62,19 +62,16 @@ class DashboardFragment : Fragment() {
     }
 
     private fun showLogoutConfirmation() {
-        androidx.appcompat.app.AlertDialog.Builder(requireContext())
-            .setTitle("Log out?")
-            .setMessage("You'll need to sign in again to monitor your tanks.")
-            .setPositiveButton("Log out") { _, _ -> logout() }
-            .setNegativeButton("Cancel", null)
-            .show()
+        val dialog = LogoutDialog {
+            logout()
+        }
+        dialog.show(childFragmentManager, "LogoutDialog")
     }
 
     private fun logout() {
         sessionManager.logout()
         startActivity(Intent(requireContext(), LoginActivity::class.java))
         requireActivity().finish()
-        Toast.makeText(requireContext(), "Logged out", Toast.LENGTH_SHORT).show()
     }
 
     private fun setupRecyclerView() {

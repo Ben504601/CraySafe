@@ -52,6 +52,79 @@
             android:maxLines="1" />
     </com.google.android.material.textfield.TextInputLayout>
 
+    <!-- ✅ NEW: Category filter chips -->
+    <HorizontalScrollView
+        android:id="@+id/filterScroll"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/space_md"
+        android:paddingHorizontal="@dimen/space_md"
+        android:scrollbars="none"
+        android:clipToPadding="false"
+        app:layout_constraintTop_toBottomOf="@id/tilSearch"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/chipGroup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:singleSelection="true"
+            app:singleLine="true"
+            app:selectionRequired="true"
+            app:chipSpacingHorizontal="@dimen/space_sm">
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipAll"
+                style="@style/Widget.MaterialComponents.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="All"
+                android:checkable="true"
+                android:checked="true"
+                android:textAllCaps="false"
+                android:background="@drawable/bg_chip_selector"
+                android:textColor="@color/bg_chip_text_selector"
+                app:chipStrokeWidth="0dp" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipHardware"
+                style="@style/Widget.MaterialComponents.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Hardware"
+                android:checkable="true"
+                android:textAllCaps="false"
+                android:background="@drawable/bg_chip_selector"
+                android:textColor="@color/bg_chip_text_selector"
+                app:chipStrokeWidth="0dp" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipSoftware"
+                style="@style/Widget.MaterialComponents.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Software"
+                android:checkable="true"
+                android:textAllCaps="false"
+                android:background="@drawable/bg_chip_selector"
+                android:textColor="@color/bg_chip_text_selector"
+                app:chipStrokeWidth="0dp" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipHealth"
+                style="@style/Widget.MaterialComponents.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Crayfish Health"
+                android:checkable="true"
+                android:textAllCaps="false"
+                android:background="@drawable/bg_chip_selector"
+                android:textColor="@color/bg_chip_text_selector"
+                app:chipStrokeWidth="0dp" />
+        </com.google.android.material.chip.ChipGroup>
+    </HorizontalScrollView>
+
     <!-- Q&A list -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvDiagnostics"
@@ -61,8 +134,8 @@
         android:paddingBottom="@dimen/space_md"
         android:clipToPadding="false"
         android:visibility="gone"
-        android:layout_marginTop="@dimen/space_sm"
-        app:layout_constraintTop_toBottomOf="@id/tilSearch"
+        android:layout_marginTop="@dimen/space_md"
+        app:layout_constraintTop_toBottomOf="@id/filterScroll"
         app:layout_constraintBottom_toBottomOf="parent" />
 
     <!-- Empty state -->
@@ -73,7 +146,7 @@
         android:gravity="center"
         android:orientation="vertical"
         android:padding="@dimen/space_lg"
-        app:layout_constraintTop_toBottomOf="@id/tilSearch"
+        app:layout_constraintTop_toBottomOf="@id/filterScroll"
         app:layout_constraintBottom_toBottomOf="parent">
 
         <ImageView
@@ -95,7 +168,7 @@
             style="@style/Text.BodyMuted"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Try a different search term"
+            android:text="Try a different search or filter"
             android:gravity="center"
             android:layout_marginTop="@dimen/space_xs" />
     </LinearLayout>
@@ -105,7 +178,7 @@
         android:layout_width="24dp"
         android:layout_height="24dp"
         android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@id/tilSearch"
+        app:layout_constraintTop_toBottomOf="@id/filterScroll"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="@dimen/space_md" />

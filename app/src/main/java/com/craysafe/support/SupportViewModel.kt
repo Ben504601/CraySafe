@@ -20,9 +20,16 @@ class SupportViewModel : ViewModel() {
     private val _error = MutableLiveData<String?>()
     val error: LiveData<String?> = _error
 
-    // Keep the full list for local filtering
+    // Full dataset from the API
     private var allItems: List<DiagnosticItem> = emptyList()
 
+    // Current filter + search state
+    private var currentCategory: String? = null    // null = "All"
+    private var currentSearch: String = ""
+
+    // ─────────────────────────────────────────────
+    // Load from API
+    // ─────────────────────────────────────────────
     fun loadQnA(sessionManager: SessionManager) {
         _isLoading.value = true
         _error.value = null
@@ -41,7 +48,7 @@ class SupportViewModel : ViewModel() {
 
                 if (response.success) {
                     allItems = response.data ?: emptyList()
-                    _items.value = allItems
+                    applyFilters()
                 } else {
                     _error.value = response.message ?: "Failed to load Q&A"
                 }
@@ -52,20 +59,45 @@ class SupportViewModel : ViewModel() {
         }
     }
 
-    /**
-     * Filter the already-loaded list in memory.
-     * No network call — instant response.
-     */
-    fun filterLocally(query: String) {
-        if (query.isBlank()) {
-            _items.value = allItems
-            return
+    // ─────────────────────────────────────────────
+    // Filter by category
+    // ─────────────────────────────────────────────
+    fun filterByCategory(category: String?) {
+        currentCategory = category
+        applyFilters()
+    }
+
+    // ─────────────────────────────────────────────
+    // Filter by search query
+    // ─────────────────────────────────────────────
+    fun filterBySearch(query: String) {
+        currentSearch = query.trim()
+        applyFilters()
+    }
+
+    // ─────────────────────────────────────────────
+    // Combine category + search
+    // ─────────────────────────────────────────────
+    private fun applyFilters() {
+        var filtered = allItems
+
+        // 1. Category filter
+        if (!currentCategory.isNullOrBlank()) {
+            filtered = filtered.filter {
+                it.category.equals(currentCategory, ignoreCase = true)
+            }
         }
-        val q = query.lowercase()
-        _items.value = allItems.filter { item ->
-            item.issue_title.lowercase().contains(q) ||
-                    item.solution.lowercase().contains(q) ||
-                    item.category.lowercase().contains(q)
+
+        // 2. Search filter
+        if (currentSearch.isNotBlank()) {
+            val q = currentSearch.lowercase()
+            filtered = filtered.filter { item ->
+                item.issue_title.lowercase().contains(q) ||
+                        item.solution.lowercase().contains(q) ||
+                        item.category.lowercase().contains(q)
+            }
         }
+
+        _items.value = filtered
     }
 }

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="@dimen/space_lg">
+
+    <!-- Warning icon -->
+    <ImageView
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:src="@drawable/ic_logout"
+        android:background="@drawable/bg_pill_warning"
+        android:padding="14dp"
+        app:tint="@color/warning"
+        android:layout_gravity="start"
+        android:contentDescription="Logout" />
+
+    <!-- Title -->
+    <TextView
+        style="@style/Text.H2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Log out?"
+        android:layout_marginTop="@dimen/space_md" />
+
+    <!-- Body -->
+    <TextView
+        style="@style/Text.Body"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="You'll need to sign in again to monitor your tanks. Any unread alerts will remain available after you return."
+        android:layout_marginTop="@dimen/space_sm"
+        android:textColor="@color/text_secondary" />
+
+    <!-- Divider -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/divider"
+        android:layout_marginTop="@dimen/space_lg" />
+
+    <!-- Buttons -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="end"
+        android:layout_marginTop="@dimen/space_sm">
+
+        <Button
+            android:id="@+id/btnCancel"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Cancel"
+            android:textColor="@color/text_secondary"
+            android:textAllCaps="false" />
+
+        <Button
+            android:id="@+id/btnLogout"
+            style="@style/Widget.MaterialComponents.Button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/space_sm"
+            android:text="Log out"
+            android:textAllCaps="false"
+            android:backgroundTint="@color/critical"
+            android:textColor="@color/white"
+            android:minWidth="100dp" />
+    </LinearLayout>
+
+</LinearLayout>

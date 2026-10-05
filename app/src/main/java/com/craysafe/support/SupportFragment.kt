@@ -9,6 +9,7 @@ import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.craysafe.R
 import com.craysafe.databinding.FragmentSupportBinding
 import com.craysafe.utils.SessionManager
 
@@ -39,6 +40,7 @@ class SupportFragment : Fragment() {
         setupRecyclerView()
         setupObservers()
         setupSearch()
+        setupFilters()
 
         viewModel.loadQnA(sessionManager)
     }
@@ -77,7 +79,19 @@ class SupportFragment : Fragment() {
 
     private fun setupSearch() {
         binding.etSearch.doAfterTextChanged { text ->
-            viewModel.filterLocally(text?.toString() ?: "")
+            viewModel.filterBySearch(text?.toString() ?: "")
+        }
+    }
+
+    private fun setupFilters() {
+        binding.chipGroup.setOnCheckedStateChangeListener { _, checkedIds ->
+            val category = when (checkedIds.firstOrNull()) {
+                R.id.chipHardware -> "Hardware"
+                R.id.chipSoftware -> "Software"
+                R.id.chipHealth -> "Crayfish Health"
+                else -> null
+            }
+            viewModel.filterByCategory(category)
         }
     }
 
