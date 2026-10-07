@@ -33,7 +33,18 @@
         android:id="@+id/navigation_reports"
         android:name="com.craysafe.reports.ReportsFragment"
         android:label="Reports"
-        tools:layout="@layout/fragment_reports" />
+        tools:layout="@layout/fragment_reports">
+
+        <action
+            android:id="@+id/action_reports_to_detail"
+            app:destination="@id/navigation_report_detail" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_report_detail"
+        android:name="com.craysafe.reports.ReportDetailFragment"
+        android:label="Report Detail"
+        tools:layout="@layout/fragment_report_detail" />
 
     <fragment
         android:id="@+id/navigation_support"

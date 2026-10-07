@@ -76,6 +76,7 @@ class DashboardFragment : Fragment() {
 
     private fun setupRecyclerView() {
         adapter = TankDashboardAdapter { tankId ->
+            sessionManager.setSelectedTankId(tankId)
             val bundle = Bundle().apply {
                 putInt("tank_id", tankId)
             }
@@ -87,7 +88,7 @@ class DashboardFragment : Fragment() {
 
         binding.rvTanks.apply {
             layoutManager = LinearLayoutManager(requireContext())
-            adapter = this@DashboardFragment.adapter  // ✅ Correct assignment
+            adapter = this@DashboardFragment.adapter
         }
     }
 

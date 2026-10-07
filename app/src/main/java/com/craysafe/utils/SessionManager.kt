@@ -14,6 +14,7 @@ class SessionManager(context: Context) {
         private const val KEY_USERNAME = "username"
         private const val KEY_USER_EMAIL = "user_email"
         private const val KEY_USER_ROLE = "user_role"
+        private const val KEY_SELECTED_TANK_ID = "selected_tank_id"
     }
 
     fun saveAuth(token: String, userId: Int, username: String, email: String, role: String) {
@@ -34,6 +35,12 @@ class SessionManager(context: Context) {
     fun getUserEmail(): String? = prefs.getString(KEY_USER_EMAIL, null)
     fun getUserRole(): String? = prefs.getString(KEY_USER_ROLE, "user")
     fun isLoggedIn(): Boolean = prefs.getBoolean(KEY_IS_LOGGED_IN, false)
+    fun setSelectedTankId(tankId: Int) {
+        prefs.edit().putInt(KEY_SELECTED_TANK_ID, tankId).apply()
+    }
+    fun getSelectedTankId(): Int {
+        return prefs.getInt(KEY_SELECTED_TANK_ID, -1)
+    }
 
     fun logout() {
         prefs.edit().clear().apply()

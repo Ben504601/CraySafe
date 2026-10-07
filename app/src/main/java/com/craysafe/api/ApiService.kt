@@ -17,6 +17,10 @@ import com.craysafe.api.models.MarkAlertResponse
 import com.craysafe.api.models.BaseResponse
 import com.craysafe.api.models.DiagnosticResponse
 import com.craysafe.api.models.UnreadCountResponse
+import com.craysafe.api.models.ReportData
+import com.craysafe.api.models.ReportResponse
+import okhttp3.ResponseBody
+import retrofit2.http.Streaming
 
 
 interface ApiService {
@@ -64,6 +68,21 @@ interface ApiService {
         @Path("id") tankId: Int,
         @Field("mode") mode: String
     ): SwitchModeResponse
+
+    @GET("tank/{id}/reports")
+    suspend fun getTankReports(
+        @Header("Authorization") token: String,
+        @Path("id") tankId: Int,
+        @Query("range") range: String
+    ): ReportResponse
+
+    @Streaming
+    @GET("tank/{id}/reports/pdf")
+    suspend fun downloadReportPdf(
+        @Header("Authorization") token: String,
+        @Path("id") tankId: Int,
+        @Query("range") range: String
+    ): ResponseBody
 
     @GET("alerts")
     suspend fun getAlerts(
