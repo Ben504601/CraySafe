@@ -10,7 +10,7 @@ import com.craysafe.api.models.Alert
 import com.craysafe.databinding.ItemAlertBinding
 
 class AlertAdapter(
-    private val onAlertClick: (Int) -> Unit
+    private val onAlertClick: (Alert) -> Unit
 ) : RecyclerView.Adapter<AlertAdapter.AlertViewHolder>() {
 
     private var items: List<Alert> = emptyList()
@@ -37,57 +37,65 @@ class AlertAdapter(
 
     class AlertViewHolder(
         private val binding: ItemAlertBinding,
-        private val onAlertClick: (Int) -> Unit
+        private val onAlertClick: (Alert) -> Unit
     ) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(alert: Alert) {
+            val context = binding.root.context
+
+            // Parse severity and parameter
+            val typeParts = alert.alert_type.split(":", limit = 2)
+            val severity = alert.severity ?: typeParts.getOrNull(0) ?: "Alert"
+            val parameter = alert.parameter ?: typeParts.getOrNull(1) ?: ""
+
+            // Parse headline from message if backend didn't provide one
+            val headline = alert.headline
+                ?: alert.message.split("\n").firstOrNull()?.trim()
+                ?: ""
+
+            // Colors per severity
+            val (bgRes, textRes) = when (severity.lowercase()) {
+                "critical" -> R.color.critical to R.color.white
+                "warning" -> R.color.warning to R.color.white
+                "time-to-danger" -> R.color.info to R.color.white
+                else -> R.color.text_tertiary to R.color.white
+            }
+
+            val badgeBg = ContextCompat.getColor(context, bgRes)
+            val badgeText = ContextCompat.getColor(context, textRes)
+
             binding.apply {
-                // Parse "Critical:Temperature"
-                val parts = alert.alert_type.split(":")
-                val category = parts.getOrNull(0) ?: "Alert"
-                val parameter = parts.getOrNull(1) ?: ""
+                // Severity badge
+                tvSeverity.text = severity.uppercase()
+                tvSeverity.setBackgroundColor(badgeBg)
+                tvSeverity.setTextColor(badgeText)
 
-                // Colors by category
-                val (categoryColorRes, stripColorRes) = when (category) {
-                    "Critical" -> R.color.critical to R.color.critical
-                    "Warning" -> R.color.warning to R.color.warning
-                    "Time-to-Danger" -> R.color.info to R.color.info
-                    else -> R.color.text_tertiary to R.color.text_tertiary
-                }
-                val categoryColor = ContextCompat.getColor(root.context, categoryColorRes)
+                // Parameter as main title
+                tvParameter.text = parameter.ifEmpty { severity }
 
-                tvCategory.text = category.uppercase()
-                tvCategory.setTextColor(categoryColor)
+                // Headline
+                tvHeadline.text = headline
 
-                tvTitle.text = parameter.ifEmpty { category }
-
-                // Message: strip the emoji prefix if present
-                tvMessage.text = alert.message
-
+                // Timestamp
                 tvDate.text = formatRelativeDate(alert.alert_date)
 
-                // Severity strip on the left edge
-                severityStrip.setBackgroundColor(
-                    ContextCompat.getColor(root.context, stripColorRes)
-                )
+                // Left severity strip
+                severityStrip.setBackgroundColor(badgeBg)
 
                 // Unread indicator
-                unreadRow.visibility = if (alert.status == "unread") View.VISIBLE else View.GONE
+                unreadRow.visibility =
+                    if (alert.status == "unread") View.VISIBLE else View.GONE
 
-                // Card appearance: unread cards have a slight tint
-                if (alert.status == "unread") {
-                    root.setCardBackgroundColor(
-                        ContextCompat.getColor(root.context, R.color.surface)
+                // Card tint: unread cards stand out slightly
+                root.setCardBackgroundColor(
+                    ContextCompat.getColor(
+                        context,
+                        if (alert.status == "unread") R.color.surface else R.color.background
                     )
-                } else {
-                    root.setCardBackgroundColor(
-                        ContextCompat.getColor(root.context, R.color.background)
-                    )
-                }
+                )
 
-                root.setOnClickListener {
-                    onAlertClick(alert.alert_id)
-                }
+                // Tap → open detail
+                root.setOnClickListener { onAlertClick(alert) }
             }
         }
 

@@ -27,7 +27,18 @@
         android:id="@+id/navigation_alerts"
         android:name="com.craysafe.alerts.AlertsFragment"
         android:label="Alerts"
-        tools:layout="@layout/fragment_alerts" />
+        tools:layout="@layout/fragment_alerts">
+
+        <action
+            android:id="@+id/action_alerts_to_alertDetail"
+            app:destination="@id/navigation_alertDetail" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_alertDetail"
+        android:name="com.craysafe.alerts.AlertDetailFragment"
+        android:label="Alert Details"
+        tools:layout="@layout/fragment_alert_detail" />
 
     <fragment
         android:id="@+id/navigation_reports"

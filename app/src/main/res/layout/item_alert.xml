@@ -5,12 +5,12 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="@dimen/space_sm"
+    android:clickable="true"
+    android:focusable="true"
     app:cardCornerRadius="@dimen/radius_md"
     app:cardElevation="0dp"
     app:strokeColor="@color/card_stroke"
     app:strokeWidth="1dp"
-    android:clickable="true"
-    android:focusable="true"
     app:rippleColor="@color/surface_variant">
 
     <LinearLayout
@@ -18,22 +18,21 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <!-- Left color strip (severity indicator) -->
+        <!-- Left severity strip -->
         <View
             android:id="@+id/severityStrip"
             android:layout_width="4dp"
             android:layout_height="match_parent"
             android:background="@color/safe" />
 
-        <!-- Content -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:orientation="vertical"
-            android:padding="@dimen/space_md">
+            android:padding="14dp">
 
-            <!-- Top row: category + timestamp -->
+            <!-- Row 1: severity badge + timestamp -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -41,13 +40,24 @@
                 android:gravity="center_vertical">
 
                 <TextView
-                    android:id="@+id/tvCategory"
-                    style="@style/Text.Label"
-                    android:layout_width="0dp"
+                    android:id="@+id/tvSeverity"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Critical"
-                    android:textColor="@color/critical" />
+                    android:text="CRITICAL"
+                    android:textSize="10sp"
+                    android:textStyle="bold"
+                    android:letterSpacing="0.08"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp"
+                    android:paddingTop="3dp"
+                    android:paddingBottom="3dp"
+                    android:textColor="@color/white"
+                    android:background="@color/critical" />
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:layout_weight="1" />
 
                 <TextView
                     android:id="@+id/tvDate"
@@ -57,38 +67,39 @@
                     android:text="just now" />
             </LinearLayout>
 
-            <!-- Title (parameter name + severity) -->
+            <!-- Row 2: parameter (main title) -->
             <TextView
-                android:id="@+id/tvTitle"
+                android:id="@+id/tvParameter"
                 style="@style/Text.H3"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Temperature"
-                android:layout_marginTop="4dp" />
+                android:layout_marginTop="8dp" />
 
-            <!-- Message body -->
+            <!-- Row 3: headline (short description) -->
             <TextView
-                android:id="@+id/tvMessage"
+                android:id="@+id/tvHeadline"
                 style="@style/Text.Body"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="..."
-                android:maxLines="20"
+                android:text=""
+                android:maxLines="2"
                 android:ellipsize="end"
-                android:layout_marginTop="4dp" />
+                android:textColor="@color/text_secondary"
+                android:layout_marginTop="2dp" />
 
-            <!-- Unread indicator dot (visible only when unread) -->
+            <!-- Row 4: unread indicator -->
             <LinearLayout
                 android:id="@+id/unreadRow"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:layout_marginTop="@dimen/space_sm">
+                android:layout_marginTop="8dp">
 
                 <View
-                    android:layout_width="8dp"
-                    android:layout_height="8dp"
+                    android:layout_width="6dp"
+                    android:layout_height="6dp"
                     android:background="@drawable/bg_status_dot"
                     android:backgroundTint="@color/primary" />
 
@@ -102,5 +113,4 @@
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>
-
 </com.google.android.material.card.MaterialCardView>

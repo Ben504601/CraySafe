@@ -8,8 +8,11 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.navigation.fragment.findNavController
 import com.craysafe.databinding.FragmentAlertsBinding
 import com.craysafe.utils.SessionManager
+import com.craysafe.R
+import com.craysafe.api.models.Alert
 
 class AlertsFragment : Fragment() {
 
@@ -42,8 +45,24 @@ class AlertsFragment : Fragment() {
     }
 
     private fun setupRecyclerView() {
-        adapter = AlertAdapter { alertId ->
-            viewModel.markAsRead(alertId, sessionManager)
+        adapter = AlertAdapter { alert ->
+            // Mark as read when opened
+            viewModel.markAsRead(alert.alert_id, sessionManager)
+
+            // Navigate to detail, passing everything the detail screen needs
+            val bundle = Bundle().apply {
+                putInt("alert_id", alert.alert_id)
+                putString("severity", alert.severity
+                    ?: alert.alert_type.split(":").getOrNull(0) ?: "Alert")
+                putString("parameter", alert.parameter
+                    ?: alert.alert_type.split(":").getOrNull(1) ?: "")
+                putString("headline", alert.headline
+                    ?: alert.message.split("\n").firstOrNull() ?: "")
+                putString("advice", alert.advice ?: "")
+                putString("tank_name", alert.tank_name ?: "")
+                putString("alert_date", alert.alert_date)
+            }
+            findNavController().navigate(R.id.action_alerts_to_alertDetail, bundle)
         }
 
         binding.rvAlerts.apply {
