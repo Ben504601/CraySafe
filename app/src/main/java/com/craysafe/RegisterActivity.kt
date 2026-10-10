@@ -75,37 +75,49 @@ class RegisterActivity : AppCompatActivity() {
             val confirm = binding.etConfirmPassword.text.toString().trim()
             val productId = binding.etProductId.text.toString().trim()
 
-            // Client-side validation with inline errors
+            // Clear previous errors
+            binding.tilUsername.error = null
+            binding.tilEmail.error = null
+            binding.tilPassword.error = null
+            binding.tilConfirmPassword.error = null
+            binding.tilProductId.error = null
+
+            // Validate username
             if (username.isEmpty()) {
-                binding.etUsername.error = "Username is required"
+                binding.tilUsername.error = "Username is required"
                 return@setOnClickListener
             }
             if (username.length < 3) {
-                binding.etUsername.error = "At least 3 characters"
+                binding.tilUsername.error = "At least 3 characters"
                 return@setOnClickListener
             }
+
+            // Validate email
             if (email.isEmpty()) {
-                binding.etEmail.error = "Email is required"
+                binding.tilEmail.error = "Email is required"
                 return@setOnClickListener
             }
             if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-                binding.etEmail.error = "Enter a valid email"
+                binding.tilEmail.error = "Please enter a valid email address"
                 return@setOnClickListener
             }
-            if (password.isEmpty()) {
-                binding.etPassword.error = "Password is required"
+
+            // Validate password strength
+            val passwordError = validatePassword(password, username, email)
+            if (passwordError != null) {
+                binding.tilPassword.error = passwordError
                 return@setOnClickListener
             }
-            if (password.length < 6) {
-                binding.etPassword.error = "At least 6 characters"
-                return@setOnClickListener
-            }
+
+            // Validate confirmation
             if (password != confirm) {
-                binding.etConfirmPassword.error = "Passwords do not match"
+                binding.tilConfirmPassword.error = "Passwords do not match"
                 return@setOnClickListener
             }
+
+            // Validate product ID
             if (productId.isEmpty()) {
-                binding.etProductId.error = "Product ID is required"
+                binding.tilProductId.error = "Product ID is required"
                 return@setOnClickListener
             }
 
@@ -116,6 +128,48 @@ class RegisterActivity : AppCompatActivity() {
             startActivity(Intent(this, LoginActivity::class.java))
             finish()
         }
+    }
+
+    private fun validatePassword(password: String, username: String, email: String): String? {
+        if (password.isEmpty()) {
+            return "Password is required"
+        }
+
+        if (password.length < 8) {
+            return "Password must be at least 8 characters"
+        }
+
+        if (!password.any { it.isLowerCase() }) {
+            return "Password must include a lowercase letter"
+        }
+
+        if (!password.any { it.isUpperCase() }) {
+            return "Password must include an uppercase letter"
+        }
+
+        if (!password.any { it.isDigit() }) {
+            return "Password must include a number"
+        }
+
+        val commonPasswords = setOf(
+            "password", "password1",
+            "password123", "12345678"
+        )
+        if (password.lowercase() in commonPasswords) {
+            return "That password is too common - please choose another"
+        }
+
+        val lowerUsername = username.lowercase()
+        val emailPrefix = email.substringBefore("@").lowercase()
+        val lowerPassword = password.lowercase()
+        if (lowerUsername.isNotEmpty() && lowerUsername in lowerPassword) {
+            return "Password cannot contain your username"
+        }
+        if (emailPrefix.isNotEmpty() && emailPrefix in lowerPassword) {
+            return "Password cannot contain your email"
+        }
+
+        return null
     }
 
     private fun hideKeyboard() {

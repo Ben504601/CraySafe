@@ -96,7 +96,7 @@
             android:layout_height="wrap_content"
             android:hint="Password"
             app:endIconMode="password_toggle"
-            app:helperText="At least 6 characters"
+            app:helperText="Min 8 chars, with uppercase, lowercase, and a number"
             android:layout_marginTop="@dimen/space_sm"
             app:layout_constraintTop_toBottomOf="@id/tilEmail"
             app:layout_constraintStart_toStartOf="parent"

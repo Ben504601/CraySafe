@@ -12,7 +12,6 @@ import androidx.navigation.fragment.findNavController
 import com.craysafe.databinding.FragmentAlertsBinding
 import com.craysafe.utils.SessionManager
 import com.craysafe.R
-import com.craysafe.api.models.Alert
 
 class AlertsFragment : Fragment() {
 

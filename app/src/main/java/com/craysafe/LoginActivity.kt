@@ -116,8 +116,8 @@ class LoginActivity : AppCompatActivity() {
                 binding.etPassword.error = "Password is required"
                 return@setOnClickListener
             }
-            if (password.length < 6) {
-                binding.etPassword.error = "Password must be at least 6 characters"
+            if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                binding.etEmail.error = "Please enter a valid email address"
                 return@setOnClickListener
             }
 

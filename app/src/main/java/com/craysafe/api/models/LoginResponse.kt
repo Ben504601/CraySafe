@@ -7,3 +7,9 @@ data class LoginResponse(
     val token: String? = null,
     val user: User? = null
 )
+
+data class ValidationErrorResponse(
+    val success: Boolean,
+    val message: String,
+    val errors: Map<String, List<String>>? = null
+)
