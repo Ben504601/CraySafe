@@ -6,7 +6,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.craysafe.api.ApiClient
 import com.craysafe.api.models.DashboardData
-import com.craysafe.api.models.DashboardResponse
 import com.craysafe.utils.SessionManager
 import kotlinx.coroutines.launch
 

@@ -16,12 +16,19 @@ data class Alert(
 
 data class AlertsResponse(
     val success: Boolean,
-    val data: List<Alert>? = null,
-    val unread_count: Int? = null,
-    val message: String? = null
+    val message: String? = null,
+    val data: AlertsData? = null,
+    val code: String? = null
+)
+
+data class AlertsData(
+    val alerts: List<Alert>? = null,
+    val unread_count: Int = 0
 )
 
 data class MarkAlertResponse(
     val success: Boolean,
-    val message: String
+    val message: String,
+    val data: Any? = null,
+    val code: String? = null
 )

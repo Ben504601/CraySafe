@@ -34,8 +34,8 @@ class RegisterViewModel : ViewModel() {
 
                 if (response.success) {
                     _registerResult.value = LoginResult.Success(
-                        token = response.token ?: "",
-                        user = response.user
+                        token = response.data?.token ?: "",
+                        user = response.data?.user
                     )
                 } else {
                     _registerResult.value = LoginResult.Error(response.message)

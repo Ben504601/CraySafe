@@ -13,7 +13,6 @@ import com.craysafe.R
 import com.craysafe.databinding.FragmentDashboardBinding
 import com.craysafe.utils.SessionManager
 import androidx.navigation.fragment.findNavController
-import android.widget.Toast
 
 class DashboardFragment : Fragment() {
 

@@ -4,7 +4,8 @@ package com.craysafe.api.models
 data class PairTankResponse(
     val success: Boolean,
     val message: String,
-    val tank: Tank? = null
+    val data: Tank? = null,
+    val code: String? = null
 )
 
 data class Tank(

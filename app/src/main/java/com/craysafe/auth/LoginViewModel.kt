@@ -31,8 +31,8 @@ class LoginViewModel : ViewModel() {
 
                 if (response.success) {
                     _loginResult.value = LoginResult.Success(
-                        token = response.token ?: "",
-                        user = response.user
+                        token = response.data?.token ?: "",
+                        user = response.data?.user
                     )
                 } else {
                     _loginResult.value = LoginResult.Error(response.message)

@@ -65,7 +65,7 @@ class MainActivity : AppCompatActivity() {
             try {
                 val response = ApiClient.apiService.getUnreadAlertCount("Bearer $token")
                 if (response.success) {
-                    updateAlertsBadge(response.count)
+                    updateAlertsBadge(response.data?.count ?: 0)
                 }
             } catch (_: Exception) {
 

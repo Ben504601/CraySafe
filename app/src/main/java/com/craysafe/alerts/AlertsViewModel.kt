@@ -40,8 +40,8 @@ class AlertsViewModel : ViewModel() {
                 _isLoading.value = false
 
                 if (response.success) {
-                    _alerts.value = response.data ?: emptyList()
-                    _unreadCount.value = response.unread_count ?: 0
+                    _alerts.value = response.data?.alerts ?: emptyList()
+                    _unreadCount.value = response.data?.unread_count ?: 0
                 } else {
                     _error.value = response.message ?: "Failed to load alerts"
                 }

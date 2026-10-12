@@ -32,7 +32,7 @@ class TankPairViewModel : ViewModel() {
                 _isLoading.value = false
 
                 if (response.success) {
-                    _pairResult.value = PairResult.Success(response.tank)
+                    _pairResult.value = PairResult.Success(response.data)
                 } else {
                     _pairResult.value = PairResult.Error(response.message)
                 }
