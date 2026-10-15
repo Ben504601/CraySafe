@@ -88,15 +88,15 @@ class TankDetailFragment : Fragment() {
         binding.tvPh.text = formatReading(data.Ph_Level, "")
         binding.tvTurbidity.text = formatReading(data.Turbidity, "")
 
-        // TTD values
-        binding.tvTempTTD.text = formatTTD(data.TemperatureTTD)
-        binding.tvPhTTD.text = formatTTD(data.PhTTD)
-        binding.tvTurbidityTTD.text = formatTTD(data.TurbidityTTD)
+        // Per-parameter status (backend truth) + TTD as secondary info
+        binding.tvTempTTD.text = formatParamLabel(data.TemperatureStatus, data.TemperatureTTD)
+        binding.tvPhTTD.text   = formatParamLabel(data.PhStatus, data.PhTTD)
+        binding.tvTurbidityTTD.text = formatParamLabel(data.TurbidityStatus, data.TurbidityTTD)
 
-        // Color-code TTD text
-        binding.tvTempTTD.setTextColor(ttdColor(data.TemperatureTTD))
-        binding.tvPhTTD.setTextColor(ttdColor(data.PhTTD))
-        binding.tvTurbidityTTD.setTextColor(ttdColor(data.TurbidityTTD))
+        // Color-code by current status, not TTD
+        binding.tvTempTTD.setTextColor(statusColor(data.TemperatureStatus))
+        binding.tvPhTTD.setTextColor(statusColor(data.PhStatus))
+        binding.tvTurbidityTTD.setTextColor(statusColor(data.TurbidityStatus))
 
         // Status
         binding.tvStatus.text = "Status: ${data.Status ?: "Unknown"}"
@@ -141,31 +141,23 @@ class TankDetailFragment : Fragment() {
     }
 
     /**
-     * Format TTD minutes into a friendly string and pick the color:
-     *  - null         → "Safe" (green)
-     *  - < 60 min     → "Critical in 45 min" (red)
-     *  - < 4 hours    → "Warning in 2 hr" (orange)
-     *  - < 24 hours   → "Predicting in 8 hr" (orange)
-     *  - >= 24 hours  → "Safe for 2 days" (green)
+     * Build the per-parameter label shown on the right side of each row.
+     * Format:  {Status}                          e.g. "Critical"
+     *          {Status} • {TTD}                  e.g. "Warning • in 2h"
+     *
+     * TTD is only appended when a breach is predicted within 7 days,
+     * so the row stays clean during normal operation.
      */
-    private fun formatTTD(minutes: Long?): String {
-        if (minutes == null) return "Safe"
-        return when {
-            minutes < 60 -> "In $minutes min"
-            minutes < 24 * 60 -> "In ${minutes / 60} hr"
-            else -> "In ${minutes / (24 * 60)} days"
-        }
+    private fun formatParamLabel(status: String?, ttd: Long?): String {
+        val base = status ?: "Unknown"
+        if (ttd == null || ttd >= 7L * 24 * 60) return base
+        return "$base • ${formatTTDShort(ttd)}"
     }
 
-    private fun ttdColor(minutes: Long?): Int {
-        val res = when {
-            minutes == null -> R.color.safe
-            minutes < 60 -> R.color.critical
-            minutes < 4 * 60 -> R.color.warning
-            minutes < 24 * 60 -> R.color.warning
-            else -> R.color.safe
-        }
-        return ContextCompat.getColor(requireContext(), res)
+    private fun formatTTDShort(minutes: Long): String = when {
+        minutes < 60 -> "in ${minutes}m"
+        minutes < 24 * 60 -> "in ${minutes / 60}h"
+        else -> "in ${minutes / (24 * 60)}d"
     }
 
     private fun statusColor(status: String?): Int {

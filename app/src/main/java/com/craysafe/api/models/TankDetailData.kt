@@ -11,7 +11,10 @@ data class TankDetailData(
     val LastUpdated: String?,
     val TemperatureTTD: Long? = null,
     val PhTTD: Long? = null,
-    val TurbidityTTD: Long? = null
+    val TurbidityTTD: Long? = null,
+    val TemperatureStatus: String? = null,
+    val PhStatus: String? = null,
+    val TurbidityStatus: String? = null
 )
 
 data class TankDetailResponse(
