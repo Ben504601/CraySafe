@@ -1,19 +1,20 @@
 package com.craysafe.reports
 
 import android.animation.ValueAnimator
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.core.content.FileProvider
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import com.craysafe.R
-import com.craysafe.api.ApiClient
 import com.craysafe.api.models.ReportData
 import com.craysafe.databinding.FragmentReportsBinding
 import com.craysafe.utils.SessionManager
@@ -21,11 +22,22 @@ import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
-import kotlinx.coroutines.launch
-import java.io.File
-import android.os.Environment
 
 class ReportsFragment : Fragment() {
+
+    private val requestWriteStorage = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        if (granted) {
+            viewModel.downloadPdf(sessionManager)
+        } else {
+            Toast.makeText(
+                requireContext(),
+                "Storage permission is needed to save the report",
+                Toast.LENGTH_LONG
+            ).show()
+        }
+    }
 
     private var _binding: FragmentReportsBinding? = null
     private val binding get() = _binding!!
@@ -145,9 +157,13 @@ class ReportsFragment : Fragment() {
             }
         }
 
-        viewModel.downloadComplete.observe(viewLifecycleOwner) { file ->
-            if (file != null) {
-                openPdf(file)
+        viewModel.downloadComplete.observe(viewLifecycleOwner) { fileName ->
+            if (fileName != null) {
+                Toast.makeText(
+                    requireContext(),
+                    "Saved to Downloads: $fileName",
+                    Toast.LENGTH_LONG
+                ).show()
                 viewModel.resetDownloadState()
             }
         }
@@ -223,28 +239,24 @@ class ReportsFragment : Fragment() {
         chart.invalidate()
     }
 
-    private fun openPdf(file: File) {
-        try {
-            val uri = FileProvider.getUriForFile(
-                requireContext(),
-                "${requireContext().packageName}.fileprovider",
-                file
-            )
-            val intent = Intent(Intent.ACTION_VIEW).apply {
-                setDataAndType(uri, "application/pdf")
-                flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
-            }
-            startActivity(Intent.createChooser(intent, "Open PDF with"))
-        } catch (e: Exception) {
-            Toast.makeText(requireContext(), "No PDF viewer installed", Toast.LENGTH_LONG).show()
-        }
-    }
-
     private fun downloadPdf() {
         if (viewModel.getTankId() == -1) {
             Toast.makeText(requireContext(), "Select a tank first", Toast.LENGTH_SHORT).show()
             return
         }
+
+        // API 24-28 only: public Downloads needs runtime WRITE_EXTERNAL_STORAGE.
+        // API 29+ uses MediaStore, no permission is required.
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q &&
+            ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            requestWriteStorage.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            return
+        }
+
         viewModel.downloadPdf(sessionManager)
     }
 
