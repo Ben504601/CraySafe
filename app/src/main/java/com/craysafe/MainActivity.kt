@@ -23,6 +23,7 @@ class MainActivity : AppCompatActivity() {
         val navController = findNavController(R.id.nav_host_fragment_activity_main)
 
         navView.setupWithNavController(navController)
+        bindBottomNavToDestinations(navView, navController)
 
         NotificationHelper.createChannels(this)
 
@@ -82,6 +83,35 @@ class MainActivity : AppCompatActivity() {
             badge.backgroundColor = android.graphics.Color.RED
         } else {
             badge.isVisible = false
+        }
+    }
+
+    private fun bindBottomNavToDestinations(
+        navView: BottomNavigationView,
+        navController: androidx.navigation.NavController
+    ) {
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            val parentTabId = when (destination.id) {
+                R.id.navigation_dashboard,
+                R.id.navigation_tankDetail -> R.id.navigation_dashboard
+
+                R.id.navigation_alerts,
+                R.id.navigation_alertDetail -> R.id.navigation_alerts
+
+                R.id.navigation_reports,
+                R.id.navigation_report_detail -> R.id.navigation_reports
+
+                R.id.navigation_support -> R.id.navigation_support
+
+                else -> null
+            }
+
+            if (parentTabId != null) {
+                val item = navView.menu.findItem(parentTabId)
+                if (item != null && !item.isChecked) {
+                    item.isChecked = true
+                }
+            }
         }
     }
 }
