@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -31,6 +30,13 @@ class AlertsFragment : Fragment() {
         return binding.root
     }
 
+    private fun setupFilters() {
+        binding.chipGroupFilter.setOnCheckedStateChangeListener { _, checkedIds ->
+            val unreadOnly = checkedIds.firstOrNull() == R.id.chipUnread
+            viewModel.setFilter(unreadOnly)
+        }
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -39,6 +45,11 @@ class AlertsFragment : Fragment() {
 
         setupRecyclerView()
         setupObservers()
+        setupFilters()
+
+        binding.errorStateLayout.btnRetry.setOnClickListener {
+            viewModel.loadAlerts(sessionManager)
+        }
 
         viewModel.loadAlerts(sessionManager)
     }
@@ -72,11 +83,14 @@ class AlertsFragment : Fragment() {
 
     private fun setupObservers() {
         viewModel.alerts.observe(viewLifecycleOwner) { alerts ->
+            binding.errorStateLayout.root.visibility = View.GONE
+
             if (alerts.isNotEmpty()) {
                 adapter.submitList(alerts)
                 binding.emptyStateLayout.visibility = View.GONE
                 binding.rvAlerts.visibility = View.VISIBLE
             } else {
+                // If we're filtering unread only and there are none, the empty state should say "All clear"
                 binding.emptyStateLayout.visibility = View.VISIBLE
                 binding.rvAlerts.visibility = View.GONE
             }
@@ -89,11 +103,23 @@ class AlertsFragment : Fragment() {
 
         viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
             binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
+            if (isLoading) {
+                binding.errorStateLayout.root.visibility = View.GONE
+                binding.rvAlerts.visibility = View.GONE
+                binding.emptyStateLayout.visibility = View.GONE
+            }
         }
 
         viewModel.error.observe(viewLifecycleOwner) { error ->
-            error?.let {
-                Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
+            if (error != null) {
+                binding.errorStateLayout.root.visibility = View.VISIBLE
+                binding.errorStateLayout.tvErrorMessage.text = "Failed to load alerts"
+                binding.errorStateLayout.tvErrorSubtext.text = error
+
+                binding.rvAlerts.visibility = View.GONE
+                binding.emptyStateLayout.visibility = View.GONE
+            } else {
+                binding.errorStateLayout.root.visibility = View.GONE
             }
         }
     }

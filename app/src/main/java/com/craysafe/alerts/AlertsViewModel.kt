@@ -23,6 +23,10 @@ class AlertsViewModel : ViewModel() {
     private val _error = MutableLiveData<String?>()
     val error: LiveData<String?> = _error
 
+    // Keep the full list in memory to allow instant filtering
+    private var allAlerts: List<Alert> = emptyList()
+    private var showUnreadOnly = false
+
     fun loadAlerts(sessionManager: SessionManager) {
         _isLoading.value = true
         _error.value = null
@@ -40,8 +44,8 @@ class AlertsViewModel : ViewModel() {
                 _isLoading.value = false
 
                 if (response.success) {
-                    _alerts.value = response.data?.alerts ?: emptyList()
-                    _unreadCount.value = response.data?.unread_count ?: 0
+                    allAlerts = response.data?.alerts ?: emptyList()
+                    applyFilter()
                 } else {
                     _error.value = response.message ?: "Failed to load alerts"
                 }
@@ -52,6 +56,23 @@ class AlertsViewModel : ViewModel() {
         }
     }
 
+    fun setFilter(unreadOnly: Boolean) {
+        if (showUnreadOnly == unreadOnly) return
+        showUnreadOnly = unreadOnly
+        applyFilter()
+    }
+
+    private fun applyFilter() {
+        val filtered = if (showUnreadOnly) {
+            allAlerts.filter { it.status == "unread" }
+        } else {
+            allAlerts
+        }
+
+        _alerts.value = filtered
+        _unreadCount.value = allAlerts.count { it.status == "unread" }
+    }
+
     fun markAsRead(alertId: Int, sessionManager: SessionManager) {
         viewModelScope.launch {
             try {
@@ -59,11 +80,12 @@ class AlertsViewModel : ViewModel() {
                 val response = ApiClient.apiService.markAlertRead("Bearer $token", alertId)
 
                 if (response.success) {
-                    val updated = _alerts.value?.map { alert ->
+                    // Update the master list
+                    allAlerts = allAlerts.map { alert ->
                         if (alert.alert_id == alertId) alert.copy(status = "read") else alert
-                    } ?: emptyList()
-                    _alerts.value = updated
-                    _unreadCount.value = updated.count { it.status == "unread" }
+                    }
+                    // Re-apply the current filter to update the UI
+                    applyFilter()
                 }
             } catch (e: Exception) {
                 _error.value = "Failed to mark as read: ${e.message}"
