@@ -37,6 +37,10 @@ class SupportFragment : Fragment() {
         sessionManager = SessionManager(requireContext())
         viewModel = ViewModelProvider(this)[SupportViewModel::class.java]
 
+        binding.errorStateLayout.btnRetry.setOnClickListener {
+            viewModel.loadQnA(sessionManager)
+        }
+
         setupRecyclerView()
         setupObservers()
         setupSearch()
@@ -55,7 +59,34 @@ class SupportFragment : Fragment() {
     }
 
     private fun setupObservers() {
+        // 1. Loading State
+        viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
+            binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
+            if (isLoading) {
+                binding.errorStateLayout.root.visibility = View.GONE
+                binding.rvDiagnostics.visibility = View.GONE
+                binding.emptyStateLayout.visibility = View.GONE
+            }
+        }
+
+        // 2. Error State
+        viewModel.error.observe(viewLifecycleOwner) { error ->
+            if (error != null) {
+                binding.errorStateLayout.root.visibility = View.VISIBLE
+                binding.errorStateLayout.tvErrorMessage.text = "Failed to load support articles"
+                binding.errorStateLayout.tvErrorSubtext.text = error
+
+                binding.rvDiagnostics.visibility = View.GONE
+                binding.emptyStateLayout.visibility = View.GONE
+            } else {
+                binding.errorStateLayout.root.visibility = View.GONE
+            }
+        }
+
+        // 3. Success / Empty State
         viewModel.items.observe(viewLifecycleOwner) { items ->
+            binding.errorStateLayout.root.visibility = View.GONE
+
             if (items.isNotEmpty()) {
                 adapter.submitList(items)
                 binding.emptyStateLayout.visibility = View.GONE
@@ -63,16 +94,6 @@ class SupportFragment : Fragment() {
             } else {
                 binding.emptyStateLayout.visibility = View.VISIBLE
                 binding.rvDiagnostics.visibility = View.GONE
-            }
-        }
-
-        viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
-            binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
-        }
-
-        viewModel.error.observe(viewLifecycleOwner) { error ->
-            error?.let {
-                Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
             }
         }
     }

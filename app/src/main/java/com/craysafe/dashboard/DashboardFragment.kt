@@ -47,6 +47,10 @@ class DashboardFragment : Fragment() {
             dialog.show(childFragmentManager, "AddTankDialog")
         }
 
+        binding.errorStateLayout.btnRetry.setOnClickListener {
+            viewModel.loadDashboard(sessionManager)
+        }
+
         binding.btnLogout.setOnClickListener {
             showLogoutConfirmation()
         }
@@ -92,23 +96,42 @@ class DashboardFragment : Fragment() {
     }
 
     private fun setupObservers() {
+        // 1. Loading State
+        viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
+            binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
+            if (isLoading) {
+                binding.errorStateLayout.root.visibility = View.GONE
+                binding.rvTanks.visibility = View.GONE
+                binding.emptyStateLayout.visibility = View.GONE
+            }
+        }
+
+        // 2. Error State
+        viewModel.error.observe(viewLifecycleOwner) { error ->
+            if (error != null) {
+                binding.errorStateLayout.root.visibility = View.VISIBLE
+                binding.errorStateLayout.tvErrorMessage.text = "Failed to load dashboard"
+                binding.errorStateLayout.tvErrorSubtext.text = error
+
+                binding.rvTanks.visibility = View.GONE
+                binding.emptyStateLayout.visibility = View.GONE
+            } else {
+                binding.errorStateLayout.root.visibility = View.GONE
+            }
+        }
+
+        // 3. Success / Empty State
         viewModel.dashboardData.observe(viewLifecycleOwner) { data ->
+            binding.errorStateLayout.root.visibility = View.GONE // clear any previous error
+
             if (data.isNotEmpty()) {
-                adapter.submitList(data)  // ✅ Now works
+                adapter.submitList(data)
                 binding.emptyStateLayout.visibility = View.GONE
                 binding.rvTanks.visibility = View.VISIBLE
             } else {
                 binding.emptyStateLayout.visibility = View.VISIBLE
                 binding.rvTanks.visibility = View.GONE
             }
-        }
-
-        viewModel.error.observe(viewLifecycleOwner) { error ->
-            android.widget.Toast.makeText(
-                requireContext(),
-                error,
-                android.widget.Toast.LENGTH_LONG
-            ).show()
         }
     }
 
