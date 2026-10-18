@@ -23,7 +23,16 @@ data class AlertsResponse(
 
 data class AlertsData(
     val alerts: List<Alert>? = null,
-    val unread_count: Int = 0
+    val unread_count: Int = 0,
+    val pagination: PaginationData? = null
+)
+
+data class PaginationData(
+    val current_page: Int,
+    val last_page: Int,
+    val per_page: Int,
+    val total: Int,
+    val has_more: Boolean
 )
 
 data class MarkAlertResponse(

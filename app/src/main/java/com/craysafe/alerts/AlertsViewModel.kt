@@ -20,14 +20,25 @@ class AlertsViewModel : ViewModel() {
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
 
+    private val _isLoadingMore = MutableLiveData<Boolean>(false)
+    val isLoadingMore: LiveData<Boolean> = _isLoadingMore
+
     private val _error = MutableLiveData<String?>()
     val error: LiveData<String?> = _error
 
-    // Keep the full list in memory to allow instant filtering
-    private var allAlerts: List<Alert> = emptyList()
-    private var showUnreadOnly = false
+    private var currentFilter = "all"
+    private var currentPage = 1
+    private var hasMorePages = true
 
-    fun loadAlerts(sessionManager: SessionManager) {
+    // Keep a master list to append to during pagination
+    private val allAlerts = mutableListOf<Alert>()
+
+    fun loadAlerts(sessionManager: SessionManager, filter: String = currentFilter) {
+        currentFilter = filter
+        currentPage = 1
+        hasMorePages = true
+        allAlerts.clear()
+
         _isLoading.value = true
         _error.value = null
 
@@ -40,12 +51,21 @@ class AlertsViewModel : ViewModel() {
                     return@launch
                 }
 
-                val response = ApiClient.apiService.getAlerts("Bearer $token")
+                val response = ApiClient.apiService.getAlerts(
+                    token = "Bearer $token",
+                    page = currentPage,
+                    filter = currentFilter
+                )
+
                 _isLoading.value = false
 
-                if (response.success) {
-                    allAlerts = response.data?.alerts ?: emptyList()
-                    applyFilter()
+                if (response.success && response.data != null) {
+                    val fetchedAlerts = response.data.alerts ?: emptyList()
+                    allAlerts.addAll(fetchedAlerts)
+                    _alerts.value = allAlerts.toList()
+                    _unreadCount.value = response.data.unread_count
+
+                    hasMorePages = response.data.pagination?.has_more ?: false
                 } else {
                     _error.value = response.message ?: "Failed to load alerts"
                 }
@@ -56,21 +76,39 @@ class AlertsViewModel : ViewModel() {
         }
     }
 
-    fun setFilter(unreadOnly: Boolean) {
-        if (showUnreadOnly == unreadOnly) return
-        showUnreadOnly = unreadOnly
-        applyFilter()
-    }
+    fun loadNextPage(sessionManager: SessionManager) {
+        if (!hasMorePages || _isLoadingMore.value == true || _isLoading.value == true) return
 
-    private fun applyFilter() {
-        val filtered = if (showUnreadOnly) {
-            allAlerts.filter { it.status == "unread" }
-        } else {
-            allAlerts
+        currentPage++
+        _isLoadingMore.value = true
+
+        viewModelScope.launch {
+            try {
+                val token = sessionManager.getToken() ?: return@launch
+                val response = ApiClient.apiService.getAlerts(
+                    token = "Bearer $token",
+                    page = currentPage,
+                    filter = currentFilter
+                )
+
+                _isLoadingMore.value = false
+
+                if (response.success && response.data != null) {
+                    val fetchedAlerts = response.data.alerts ?: emptyList()
+                    allAlerts.addAll(fetchedAlerts)
+                    _alerts.value = allAlerts.toList()
+                    _unreadCount.value = response.data.unread_count
+
+                    hasMorePages = response.data.pagination?.has_more ?: false
+                } else {
+                    // Failed to load page, roll back page count so retry works
+                    currentPage--
+                }
+            } catch (e: Exception) {
+                _isLoadingMore.value = false
+                currentPage-- // Rollback
+            }
         }
-
-        _alerts.value = filtered
-        _unreadCount.value = allAlerts.count { it.status == "unread" }
     }
 
     fun markAsRead(alertId: Int, sessionManager: SessionManager) {
@@ -80,12 +118,13 @@ class AlertsViewModel : ViewModel() {
                 val response = ApiClient.apiService.markAlertRead("Bearer $token", alertId)
 
                 if (response.success) {
-                    // Update the master list
-                    allAlerts = allAlerts.map { alert ->
-                        if (alert.alert_id == alertId) alert.copy(status = "read") else alert
+                    // Update the local list
+                    val index = allAlerts.indexOfFirst { it.alert_id == alertId }
+                    if (index != -1) {
+                        allAlerts[index] = allAlerts[index].copy(status = "read")
+                        _alerts.value = allAlerts.toList()
+                        _unreadCount.value = maxOf(0, (_unreadCount.value ?: 1) - 1)
                     }
-                    // Re-apply the current filter to update the UI
-                    applyFilter()
                 }
             } catch (e: Exception) {
                 _error.value = "Failed to mark as read: ${e.message}"

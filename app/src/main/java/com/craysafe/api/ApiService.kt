@@ -86,7 +86,9 @@ interface ApiService {
 
     @GET("alerts")
     suspend fun getAlerts(
-        @Header("Authorization") token: String
+        @Header("Authorization") token: String,
+        @Query("page") page: Int,
+        @Query("filter") filter: String
     ): AlertsResponse
 
     @POST("alerts/{id}/read")

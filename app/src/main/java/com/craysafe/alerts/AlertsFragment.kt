@@ -32,8 +32,8 @@ class AlertsFragment : Fragment() {
 
     private fun setupFilters() {
         binding.chipGroupFilter.setOnCheckedStateChangeListener { _, checkedIds ->
-            val unreadOnly = checkedIds.firstOrNull() == R.id.chipUnread
-            viewModel.setFilter(unreadOnly)
+            val filter = if (checkedIds.firstOrNull() == R.id.chipUnread) "unread" else "all"
+            viewModel.loadAlerts(sessionManager, filter)
         }
     }
 
@@ -78,29 +78,28 @@ class AlertsFragment : Fragment() {
         binding.rvAlerts.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = this@AlertsFragment.adapter
+
+            // Add the pagination scroll listener
+            addOnScrollListener(object : androidx.recyclerview.widget.RecyclerView.OnScrollListener() {
+                override fun onScrolled(recyclerView: androidx.recyclerview.widget.RecyclerView, dx: Int, dy: Int) {
+                    if (dy <= 0) return // Scrolling up
+
+                    val layoutManager = recyclerView.layoutManager as LinearLayoutManager
+                    val visibleItemCount = layoutManager.childCount
+                    val totalItemCount = layoutManager.itemCount
+                    val firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
+
+                    // Trigger load when 3 items from the bottom
+                    if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount - 3) {
+                        viewModel.loadNextPage(sessionManager)
+                    }
+                }
+            })
         }
     }
 
     private fun setupObservers() {
-        viewModel.alerts.observe(viewLifecycleOwner) { alerts ->
-            binding.errorStateLayout.root.visibility = View.GONE
-
-            if (alerts.isNotEmpty()) {
-                adapter.submitList(alerts)
-                binding.emptyStateLayout.visibility = View.GONE
-                binding.rvAlerts.visibility = View.VISIBLE
-            } else {
-                // If we're filtering unread only and there are none, the empty state should say "All clear"
-                binding.emptyStateLayout.visibility = View.VISIBLE
-                binding.rvAlerts.visibility = View.GONE
-            }
-        }
-
-        viewModel.unreadCount.observe(viewLifecycleOwner) { count ->
-            binding.tvUnreadCount.text = if (count == 0) "No unread alerts" else "$count unread"
-            (activity as? com.craysafe.MainActivity)?.updateAlertsBadge(count)
-        }
-
+        // 1. First load or Filter change (hides everything to show main spinner)
         viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
             binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
             if (isLoading) {
@@ -110,6 +109,36 @@ class AlertsFragment : Fragment() {
             }
         }
 
+        // 2. Pagination load (Bottom scroll - just show the spinner, KEEP the list visible)
+        viewModel.isLoadingMore.observe(viewLifecycleOwner) { isLoadingMore ->
+            if (isLoadingMore) {
+                binding.progressBar.visibility = View.VISIBLE
+            }
+        }
+
+        // 3. Data (Alerts loaded successfully)
+        viewModel.alerts.observe(viewLifecycleOwner) { alerts ->
+            binding.errorStateLayout.root.visibility = View.GONE
+            binding.progressBar.visibility = View.GONE // Hide spinner when data arrives
+
+            if (alerts.isNotEmpty()) {
+                adapter.submitList(alerts)
+                binding.emptyStateLayout.visibility = View.GONE
+                binding.rvAlerts.visibility = View.VISIBLE
+            } else {
+                // If empty, check if we are filtering
+                binding.emptyStateLayout.visibility = View.VISIBLE
+                binding.rvAlerts.visibility = View.GONE
+            }
+        }
+
+        // 4. Unread count badge
+        viewModel.unreadCount.observe(viewLifecycleOwner) { count ->
+            binding.tvUnreadCount.text = if (count == 0) "No unread alerts" else "$count unread"
+            (activity as? com.craysafe.MainActivity)?.updateAlertsBadge(count)
+        }
+
+        // 5. Error state
         viewModel.error.observe(viewLifecycleOwner) { error ->
             if (error != null) {
                 binding.errorStateLayout.root.visibility = View.VISIBLE
@@ -118,15 +147,11 @@ class AlertsFragment : Fragment() {
 
                 binding.rvAlerts.visibility = View.GONE
                 binding.emptyStateLayout.visibility = View.GONE
+                binding.progressBar.visibility = View.GONE
             } else {
                 binding.errorStateLayout.root.visibility = View.GONE
             }
         }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        viewModel.loadAlerts(sessionManager)
     }
 
     override fun onDestroyView() {
