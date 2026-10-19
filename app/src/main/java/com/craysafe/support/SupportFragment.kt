@@ -50,7 +50,10 @@ class SupportFragment : Fragment() {
     }
 
     private fun setupRecyclerView() {
-        adapter = DiagnosticAdapter()
+        adapter = DiagnosticAdapter { qaId, isHelpful ->
+            // This is when the user taps thumbs up or down
+            viewModel.submitFeedback(qaId, isHelpful, sessionManager)
+        }
 
         binding.rvDiagnostics.apply {
             layoutManager = LinearLayoutManager(requireContext())

@@ -56,6 +56,57 @@
             android:layout_height="wrap_content"
             android:text="Tap to expand"
             android:layout_marginTop="@dimen/space_sm" />
+
+        <!-- Feedback Row (Initially Hidden) -->
+        <LinearLayout
+            android:id="@+id/feedbackLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginTop="@dimen/space_md"
+            android:visibility="gone">
+
+            <TextView
+                style="@style/Text.Caption"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Was this helpful?" />
+
+            <!-- Thumbs Up -->
+            <ImageButton
+                android:id="@+id/btnHelpful"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_thumb_up"
+                app:tint="@color/text_tertiary" />
+
+            <TextView
+                android:id="@+id/tvHelpfulCount"
+                style="@style/Text.Caption"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/space_sm"
+                android:text="0" />
+
+            <!-- Thumbs Down -->
+            <ImageButton
+                android:id="@+id/btnUnhelpful"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_thumb_down"
+                app:tint="@color/text_tertiary" />
+
+            <TextView
+                android:id="@+id/tvUnhelpfulCount"
+                style="@style/Text.Caption"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0" />
+        </LinearLayout>
     </LinearLayout>
 
 </com.google.android.material.card.MaterialCardView>

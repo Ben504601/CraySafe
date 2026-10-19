@@ -111,6 +111,14 @@ interface ApiService {
         @Query("category") category: String? = null
     ): DiagnosticResponse
 
+    @FormUrlEncoded
+    @POST("support/qa/{id}/feedback")
+    suspend fun submitQaFeedback(
+        @Header("Authorization") token: String,
+        @Path("id") qaId: Int,
+        @Field("is_helpful") isHelpful: Boolean
+    ): BaseResponse
+
     @GET("alerts/unread-count")
     suspend fun getUnreadAlertCount(
         @Header("Authorization") token: String

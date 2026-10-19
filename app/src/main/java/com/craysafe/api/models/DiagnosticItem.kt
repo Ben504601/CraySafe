@@ -5,7 +5,10 @@ data class DiagnosticItem(
     val category: String,
     val issue_title: String,
     val solution: String,
-    val created_at: String
+    val created_at: String,
+    val helpful_count: Int = 0,
+    val unhelpful_count: Int = 0,
+    val user_vote: Int? = null
 )
 
 data class DiagnosticResponse(
