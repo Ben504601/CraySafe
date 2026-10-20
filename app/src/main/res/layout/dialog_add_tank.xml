@@ -68,6 +68,7 @@
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:src="@drawable/ic_help"
+            android:background="@color/info_bg"
             app:tint="@color/primary"
             android:contentDescription="Tip" />
 
@@ -78,6 +79,7 @@
             android:layout_weight="1"
             android:layout_marginStart="@dimen/space_sm"
             android:text="You can find the Product ID on the box or the paper receipt that came with your device."
+            android:background="@color/info_bg"
             android:textColor="@color/text_primary" />
     </LinearLayout>
 

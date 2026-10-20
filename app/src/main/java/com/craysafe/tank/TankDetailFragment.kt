@@ -76,6 +76,16 @@ class TankDetailFragment : Fragment() {
                 Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
             }
         }
+
+        viewModel.renameResult.observe(viewLifecycleOwner) { success ->
+            if (success == true) {
+                Toast.makeText(requireContext(), "Tank renamed", Toast.LENGTH_SHORT).show()
+                viewModel.resetRenameState()
+            } else if (success == false) {
+                Toast.makeText(requireContext(), "Failed to rename tank", Toast.LENGTH_SHORT).show()
+                viewModel.resetRenameState()
+            }
+        }
     }
 
     private fun updateUI(data: TankDetailData) {
@@ -116,10 +126,15 @@ class TankDetailFragment : Fragment() {
             val next = if (current == "Growing") "Breeding" else "Growing"
             confirmModeSwitch(current, next)
         }
+
+        binding.btnEditName.setOnClickListener {
+            val currentName = viewModel.data.value?.Tankname ?: ""
+            showRenameDialog(currentName)
+        }
     }
 
     private fun confirmModeSwitch(current: String, next: String) {
-        AlertDialog.Builder(requireContext())
+        AlertDialog.Builder(requireContext(), R.style.Theme_CraySafe_Dialog)
             .setTitle("Switch to $next mode?")
             .setMessage(
                 "The safety thresholds will change. Current mode: $current.\n\n" +
@@ -127,6 +142,25 @@ class TankDetailFragment : Fragment() {
             )
             .setPositiveButton("Switch") { _, _ ->
                 viewModel.switchMode(tankId, next, sessionManager)
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+
+    private fun showRenameDialog(currentName: String) {
+        val dialogBinding = com.craysafe.databinding.DialogRenameTankBinding.inflate(layoutInflater)
+        dialogBinding.etTankName.setText(currentName)
+
+        // Move cursor to the end of the text
+        dialogBinding.etTankName.setSelection(currentName.length)
+
+        AlertDialog.Builder(requireContext(), R.style.Theme_CraySafe_Dialog)
+            .setView(dialogBinding.root)
+            .setPositiveButton("Save") { _, _ ->
+                val newName = dialogBinding.etTankName.text.toString().trim()
+                if (newName.isNotEmpty() && newName != currentName) {
+                    viewModel.renameTank(tankId, newName, sessionManager)
+                }
             }
             .setNegativeButton("Cancel", null)
             .show()

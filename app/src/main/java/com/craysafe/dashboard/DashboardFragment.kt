@@ -135,6 +135,13 @@ class DashboardFragment : Fragment() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        if (::viewModel.isInitialized) {
+            viewModel.loadDashboard(sessionManager)
+        }
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null

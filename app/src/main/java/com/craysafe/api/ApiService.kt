@@ -62,6 +62,14 @@ interface ApiService {
     ): TankDetailResponse
 
     @FormUrlEncoded
+    @POST("tank/{id}/rename")
+    suspend fun renameTank(
+        @Header("Authorization") token: String,
+        @Path("id") tankId: Int,
+        @Field("name") newName: String
+    ): BaseResponse
+
+    @FormUrlEncoded
     @POST("tank/{id}/mode")
     suspend fun switchMode(
         @Header("Authorization") token: String,

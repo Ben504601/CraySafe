@@ -23,6 +23,9 @@ class TankDetailViewModel : ViewModel() {
     private val _error = MutableLiveData<String?>()
     val error: LiveData<String?> = _error
 
+    private val _renameResult = MutableLiveData<Boolean?>()
+    val renameResult: LiveData<Boolean?> = _renameResult
+
     fun loadTankDetail(tankId: Int, sessionManager: SessionManager) {
         _isLoading.value = true
         _error.value = null
@@ -89,5 +92,28 @@ class TankDetailViewModel : ViewModel() {
                 _error.value = "Failed to switch mode: ${e.message}"
             }
         }
+    }
+
+    fun renameTank(tankId: Int, newName: String, sessionManager: SessionManager) {
+        viewModelScope.launch {
+            try {
+                val token = sessionManager.getToken() ?: return@launch
+                val response = ApiClient.apiService.renameTank("Bearer $token", tankId, newName)
+
+                if (response.success) {
+                    // Update the local data object so the UI updates instantly
+                    _data.value = _data.value?.copy(Tankname = newName)
+                    _renameResult.value = true
+                } else {
+                    _renameResult.value = false
+                }
+            } catch (e: Exception) {
+                _renameResult.value = false
+            }
+        }
+    }
+
+    fun resetRenameState() {
+        _renameResult.value = null
     }
 }
