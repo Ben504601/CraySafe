@@ -8,6 +8,9 @@ import com.craysafe.api.ApiClient
 import com.craysafe.api.models.DashboardData
 import com.craysafe.utils.SessionManager
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 
 class DashboardViewModel : ViewModel() {
 
@@ -20,30 +23,47 @@ class DashboardViewModel : ViewModel() {
     private val _error = MutableLiveData<String?>()
     val error: LiveData<String?> = _error
 
-    fun loadDashboard(sessionManager: SessionManager) {
-        _isLoading.value = true
+    private var pollingJob: Job? = null
+
+    fun loadDashboard(sessionManager: SessionManager, isSilent: Boolean = false) {
+        if (!isSilent) {
+            _isLoading.value = true
+        }
+        _error.value = null
 
         viewModelScope.launch {
             try {
-                val token = sessionManager.getToken()
-                if (token == null) {
-                    _error.value = "Please login again"
-                    _isLoading.value = false
-                    return@launch
-                }
-
+                val token = sessionManager.getToken() ?: return@launch
                 val response = ApiClient.apiService.getDashboard("Bearer $token")
-                _isLoading.value = false
+
+                if (!isSilent) _isLoading.value = false
 
                 if (response.success) {
                     _dashboardData.value = response.data ?: emptyList()
                 } else {
-                    _error.value = response.message ?: "Failed to load dashboard"
+                    if (!isSilent) _error.value = response.message ?: "Failed to load"
                 }
             } catch (e: Exception) {
-                _isLoading.value = false
-                _error.value = "Network error: ${e.message}"
+                if (!isSilent) {
+                    _isLoading.value = false
+                    _error.value = "Network error: ${e.message}"
+                }
             }
         }
+    }
+
+    fun startPolling(sessionManager: SessionManager) {
+        if (pollingJob?.isActive == true) return
+        pollingJob = viewModelScope.launch {
+            while (isActive) {
+                loadDashboard(sessionManager, isSilent = true)
+                delay(5000) // Wait 5 seconds before next fetch
+            }
+        }
+    }
+
+    fun stopPolling() {
+        pollingJob?.cancel()
+        pollingJob = null
     }
 }

@@ -8,6 +8,9 @@ import com.craysafe.api.ApiClient
 import com.craysafe.api.models.TankDetailData
 import com.craysafe.utils.SessionManager
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 
 class TankDetailViewModel : ViewModel() {
 
@@ -26,9 +29,12 @@ class TankDetailViewModel : ViewModel() {
     private val _renameResult = MutableLiveData<Boolean?>()
     val renameResult: LiveData<Boolean?> = _renameResult
 
-    fun loadTankDetail(tankId: Int, sessionManager: SessionManager) {
-        _isLoading.value = true
-        _error.value = null
+    private var pollingJob: Job? = null
+
+    fun loadTankDetail(tankId: Int, sessionManager: SessionManager, isSilent: Boolean = false) {
+        if (!isSilent) {
+            _isLoading.value = true
+        }
 
         viewModelScope.launch {
             try {
@@ -57,6 +63,21 @@ class TankDetailViewModel : ViewModel() {
                 _error.value = "Network error: ${e.message}"
             }
         }
+    }
+
+    fun startPolling(tankId: Int, sessionManager:SessionManager) {
+        if (pollingJob?.isActive == true) return
+        pollingJob = viewModelScope.launch {
+            while (isActive) {
+                loadTankDetail(tankId, sessionManager, isSilent = true)
+                delay(5000)
+            }
+        }
+    }
+
+    fun stopPolling() {
+        pollingJob?.cancel()
+        pollingJob = null
     }
 
     // Function to switch mode

@@ -223,6 +223,18 @@ class TankDetailFragment : Fragment() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        if (tankId != -1) {
+            viewModel.startPolling(tankId, sessionManager)
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        viewModel.stopPolling()
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null

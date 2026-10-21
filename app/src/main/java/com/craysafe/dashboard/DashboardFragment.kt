@@ -137,9 +137,12 @@ class DashboardFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        if (::viewModel.isInitialized) {
-            viewModel.loadDashboard(sessionManager)
-        }
+        viewModel.startPolling(sessionManager)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        viewModel.stopPolling()
     }
 
     override fun onDestroyView() {
