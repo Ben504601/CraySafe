@@ -76,6 +76,16 @@
                 android:text="Temperature"
                 android:layout_marginTop="8dp" />
 
+            <TextView
+                android:id="@+id/tvTankName"
+                style="@style/Text.Caption"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tank Name"
+                android:textColor="@color/primary"
+                android:textStyle="bold"
+                android:layout_marginTop="2dp" />
+
             <!-- Row 3: headline (short description) -->
             <TextView
                 android:id="@+id/tvHeadline"
@@ -86,7 +96,7 @@
                 android:maxLines="2"
                 android:ellipsize="end"
                 android:textColor="@color/text_secondary"
-                android:layout_marginTop="2dp" />
+                android:layout_marginTop="4dp" />
 
             <!-- Row 4: unread indicator -->
             <LinearLayout

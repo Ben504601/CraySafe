@@ -73,6 +73,9 @@ class AlertAdapter(
                 // Parameter as main title
                 tvParameter.text = parameter.ifEmpty { severity }
 
+                // Tank Name
+                tvTankName.text = alert.tank_name ?: "Unknown Tank"
+
                 // Headline
                 tvHeadline.text = headline
 
