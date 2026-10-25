@@ -105,6 +105,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="25.5°"
+                    android:textColor="@color/text_primary"
                     android:layout_marginTop="2dp" />
             </LinearLayout>
 
@@ -128,6 +129,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="7.4"
+                    android:textColor="@color/text_primary"
                     android:layout_marginTop="2dp" />
             </LinearLayout>
 
@@ -151,6 +153,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="15"
+                    android:textColor="@color/text_primary"
                     android:layout_marginTop="2dp" />
             </LinearLayout>
         </LinearLayout>

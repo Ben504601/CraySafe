@@ -16,5 +16,8 @@ data class DashboardData(
     val Ph_Level: Double? = null,
     val Turbidity: Double? = null,
     val Status: String? = null,
-    val Tankname: String? = null
+    val Tankname: String? = null,
+    val TemperatureStatus: String? = null,
+    val PhStatus: String? = null,
+    val TurbidityStatus: String? = null
 )

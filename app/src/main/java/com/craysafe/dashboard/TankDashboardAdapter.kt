@@ -1,5 +1,6 @@
 package com.craysafe.dashboard
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
@@ -66,6 +67,10 @@ class TankDashboardAdapter(
                 tvStatus.text = label
                 tvStatus.setTextColor(statusColor)
 
+                tvTemperature.setTextColor(getStatusColor(root.context, data.TemperatureStatus))
+                tvPh.setTextColor(getStatusColor(root.context, data.PhStatus))
+                tvTurbidity.setTextColor(getStatusColor(root.context, data.TurbidityStatus))
+
                 // ── 3. Mode pill background ──
                 val modeBgRes = if (data.Mode == "Breeding") R.color.warning_bg else R.color.info_bg
                 tvMode.setBackgroundColor(ContextCompat.getColor(root.context, modeBgRes))
@@ -77,12 +82,16 @@ class TankDashboardAdapter(
             }
         }
 
-        /**
-         * Format sensor readings nicely:
-         *  - null → "—" (em-dash)
-         *  - 25.5 → "25.5"
-         *  - 15.0 → "15"
-         */
+        private fun getStatusColor(context: Context, status: String?): Int {
+            val colorRes = when (status?.lowercase()) {
+                "safe" -> R.color.safe
+                "warning" -> R.color.warning
+                "critical" -> R.color.critical
+                else -> R.color.text_tertiary
+            }
+            return ContextCompat.getColor(context, colorRes)
+        }
+
         private fun formatReading(value: Double?): String {
             if (value == null) return "—"
             return if (value % 1.0 == 0.0) value.toInt().toString() else value.toString()
