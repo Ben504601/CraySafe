@@ -55,6 +55,10 @@ class DashboardFragment : Fragment() {
             showLogoutConfirmation()
         }
 
+        binding.swipeRefresh.setOnRefreshListener {
+            viewModel.loadDashboard(sessionManager, isSilent = true)
+        }
+
         sessionManager = SessionManager(requireContext())
         viewModel = ViewModelProvider(this)[DashboardViewModel::class.java]
 
@@ -98,6 +102,7 @@ class DashboardFragment : Fragment() {
     private fun setupObservers() {
         // 1. Loading State
         viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
+            binding.swipeRefresh.isRefreshing = false
             binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
             if (isLoading) {
                 binding.errorStateLayout.root.visibility = View.GONE
