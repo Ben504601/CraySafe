@@ -262,6 +262,16 @@ class ReportsFragment : Fragment() {
         viewModel.downloadPdf(sessionManager)
     }
 
+    override fun onResume() {
+        super.onResume()
+        viewModel.startPolling(sessionManager)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        viewModel.stopPolling()
+    }
+
     override fun onDestroyView() {
         progressAnimator?.cancel()
         progressAnimator = null

@@ -19,6 +19,9 @@ import com.craysafe.utils.SessionManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import okhttp3.ResponseBody
 import java.io.File
 import java.io.IOException
@@ -49,7 +52,9 @@ class ReportsViewModel(app: Application) : AndroidViewModel(app) {
     private var currentRange = "7d"
     private var tankId = -1
 
-    fun loadReport(range: String, sessionManager: SessionManager) {
+    private var pollingJob: Job? = null
+
+    fun loadReport(range: String, sessionManager: SessionManager, isSilent: Boolean = false) {
         currentRange = range
         tankId = sessionManager.getSelectedTankId()
         if (tankId == -1) {
@@ -57,22 +62,38 @@ class ReportsViewModel(app: Application) : AndroidViewModel(app) {
             return
         }
 
-        _isLoading.value = true
+        if (!isSilent) {
+            _isLoading.value = true
+        }
         _error.value = null
 
         viewModelScope.launch {
             try {
                 val token = sessionManager.getToken() ?: return@launch
                 val response = ApiClient.apiService.getTankReports("Bearer $token", tankId, range)
-                _isLoading.value = false
+
+                if (!isSilent) _isLoading.value = false
+
                 if (response.success) {
                     _reportData.value = response.data
                 } else {
-                    _error.value = response.message ?: "Failed to load reports"
+                    if (!isSilent) _error.value = response.message ?: "Failed to load reports"
                 }
             } catch (e: Exception) {
-                _isLoading.value = false
-                _error.value = "Network error: ${e.message}"
+                if (!isSilent) {
+                    _isLoading.value = false
+                    _error.value = "Network error: ${e.message}"
+                }
+            }
+        }
+    }
+
+    fun startPolling(sessionManager: SessionManager) {
+        if (pollingJob?.isActive == true) return
+        pollingJob = viewModelScope.launch {
+            while (isActive) {
+                loadReport(currentRange, sessionManager, isSilent =true)
+                delay(10000)
             }
         }
     }
@@ -233,6 +254,11 @@ class ReportsViewModel(app: Application) : AndroidViewModel(app) {
     fun resetDownloadState() {
         _downloadProgress.value = null
         _downloadComplete.value = null
+    }
+
+    fun stopPolling() {
+        pollingJob?.cancel()
+        pollingJob = null
     }
 
     fun getCurrentRange() = currentRange
