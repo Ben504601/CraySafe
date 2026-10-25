@@ -102,7 +102,6 @@ class DashboardFragment : Fragment() {
     private fun setupObservers() {
         // 1. Loading State
         viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
-            binding.swipeRefresh.isRefreshing = false
             binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
             if (isLoading) {
                 binding.errorStateLayout.root.visibility = View.GONE
@@ -113,6 +112,7 @@ class DashboardFragment : Fragment() {
 
         // 2. Error State
         viewModel.error.observe(viewLifecycleOwner) { error ->
+            binding.swipeRefresh.isRefreshing = false
             if (error != null) {
                 binding.errorStateLayout.root.visibility = View.VISIBLE
                 binding.errorStateLayout.tvErrorMessage.text = "Failed to load dashboard"
@@ -127,6 +127,7 @@ class DashboardFragment : Fragment() {
 
         // 3. Success / Empty State
         viewModel.dashboardData.observe(viewLifecycleOwner) { data ->
+            binding.swipeRefresh.isRefreshing = false
             binding.errorStateLayout.root.visibility = View.GONE // clear any previous error
 
             if (data.isNotEmpty()) {
