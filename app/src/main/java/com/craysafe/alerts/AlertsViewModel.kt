@@ -131,4 +131,35 @@ class AlertsViewModel : ViewModel() {
             }
         }
     }
+
+    fun markAllAsRead(sessionManager: SessionManager) {
+        viewModelScope.launch {
+            try {
+                val token = sessionManager.getToken() ?: return@launch
+                val response = ApiClient.apiService.markAllAlertsRead("Bearer $token")
+
+                if (response.success) {
+                    // 1. Update the master list in memory to "read"
+                    allAlerts.replaceAll { it.copy(status = "read") }
+
+                    // 2. Update the UI based on the active filter
+                    if (currentFilter == "unread") {
+                        // If we are on the "Unread" tab, the list should now be empty
+                        allAlerts.clear()
+                        _alerts.value = emptyList()
+                    } else {
+                        // If we are on the "All" tab, just refresh the list to show them as read
+                        _alerts.value = allAlerts.toList()
+                    }
+
+                    // 3. Clear the badge count
+                    _unreadCount.value = 0
+                } else {
+                    _error.value = response.message ?: "Failed to mark all as read"
+                }
+            } catch (e: Exception) {
+                _error.value = "Network error: ${e.message}"
+            }
+        }
+    }
 }

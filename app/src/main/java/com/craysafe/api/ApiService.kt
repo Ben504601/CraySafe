@@ -99,6 +99,11 @@ interface ApiService {
         @Query("filter") filter: String
     ): AlertsResponse
 
+    @POST("alerts/read-all")
+    suspend fun markAllAlertsRead(
+        @Header("Authorization") token: String
+    ): BaseResponse
+
     @POST("alerts/{id}/read")
     suspend fun markAlertRead(
         @Header("Authorization") token: String,

@@ -51,6 +51,10 @@ class AlertsFragment : Fragment() {
             viewModel.loadAlerts(sessionManager)
         }
 
+        binding.btnMarkAllRead.setOnClickListener {
+            viewModel.markAllAsRead(sessionManager)
+        }
+
         viewModel.loadAlerts(sessionManager)
     }
 
@@ -136,6 +140,8 @@ class AlertsFragment : Fragment() {
         viewModel.unreadCount.observe(viewLifecycleOwner) { count ->
             binding.tvUnreadCount.text = if (count == 0) "No unread alerts" else "$count unread"
             (activity as? com.craysafe.MainActivity)?.updateAlertsBadge(count)
+
+            binding.btnMarkAllRead.visibility = if (count > 0) View.VISIBLE else View.GONE
         }
 
         // 5. Error state
