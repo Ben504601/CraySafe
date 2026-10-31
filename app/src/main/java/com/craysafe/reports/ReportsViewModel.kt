@@ -125,7 +125,8 @@ class ReportsViewModel(app: Application) : AndroidViewModel(app) {
                 _downloadIndeterminate.postValue(total <= 0)
 
                 val app = getApplication<Application>()
-                val fileName = "craysafe_report_${tankId}_${currentRange}.pdf"
+                val timestamp = java.text.SimpleDateFormat("yyyy-MM-dd_HH-mm", java.util.Locale.US).format(java.util.Date())
+                val fileName = "craysafe_report_${tankId}_${currentRange}_${timestamp}.pdf"
 
                 val downloadStart = System.currentTimeMillis()
 
