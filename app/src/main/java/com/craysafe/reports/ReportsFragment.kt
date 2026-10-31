@@ -253,6 +253,10 @@ class ReportsFragment : Fragment() {
         binding.contentLayout.visibility = View.VISIBLE
         binding.emptyStateLayout.visibility = View.GONE
 
+        binding.chartTemperature.visibility = View.VISIBLE
+        binding.chartPh.visibility = View.VISIBLE
+        binding.chartTurbidity.visibility = View.VISIBLE
+
         // Averages
         data.summary?.let { s ->
             binding.tvTempAvg.text = "${s.temperature.avg}°C"
@@ -271,6 +275,9 @@ class ReportsFragment : Fragment() {
         binding.chartPh.visibility = View.GONE
         binding.chartTurbidity.visibility = View.GONE
         binding.emptyStateLayout.visibility = View.VISIBLE
+        binding.tvTempAvg.text = "-"
+        binding.tvPhAvg.text = "-"
+        binding.tvTurbAvg.text = "-"
     }
 
     private fun renderMiniChart(chart: com.github.mikephil.charting.charts.LineChart, values: List<Double>, colorRes: Int) {
