@@ -65,6 +65,7 @@ class ReportsFragment : Fragment() {
         observe()
 
         viewModel.loadReport("7d", sessionManager)
+        viewModel.loadAvailableTanks(sessionManager)
     }
 
     private fun setupCharts() {
@@ -106,6 +107,53 @@ class ReportsFragment : Fragment() {
         binding.btnDownloadPdf.setOnClickListener {
             downloadPdf()
         }
+
+        binding.tvTankName.setOnClickListener {
+            showTankSelectionDialog()
+        }
+
+        binding.cardTemperature.setOnClickListener {
+            navigateToDetail("temperature")
+        }
+
+        binding.cardPh.setOnClickListener {
+            navigateToDetail("ph")
+        }
+
+        binding.cardTurbidity.setOnClickListener {
+            navigateToDetail("turbidity")
+        }
+    }
+
+    private fun showTankSelectionDialog() {
+        val tankList = viewModel.tanks.value
+        if (tankList.isNullOrEmpty()) {
+            Toast.makeText(requireContext(), "No tanks available", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val tankNames = tankList.map { it.Tankname ?: "Tank #${it.TankID}" }.toTypedArray()
+        val currentTankId = sessionManager.getSelectedTankId()
+        val currentIndex = tankList.indexOfFirst { it.TankID == currentTankId }
+
+        android.app.AlertDialog.Builder(requireContext())
+            .setTitle("Select a Tank")
+            .setSingleChoiceItems(tankNames, currentIndex) { dialog, which ->
+                val selectedTank = tankList[which]
+
+                // 1. Save selection to session
+                sessionManager.setSelectedTankId(selectedTank.TankID)
+
+                // 2. Update the header text
+                binding.tvTankName.text = selectedTank.Tankname ?: "Tank #${selectedTank.TankID}"
+
+                // 3. Reload the charts with the new tank
+                viewModel.loadReport(viewModel.getCurrentRange(), sessionManager, isSilent = false)
+
+                // 4. Close the dialog
+                dialog.dismiss()
+            }
+            .show()
     }
 
     private fun navigateToDetail(parameter: String) {
@@ -120,8 +168,12 @@ class ReportsFragment : Fragment() {
         viewModel.reportData.observe(viewLifecycleOwner) { data ->
             currentReport = data
             if (data == null || data.readings.isEmpty()) {
+                if (data != null) {
+                    binding.tvTankName.text = data.tank.Tankname ?: "Tank #${data.tank.TankID}"
+                }
                 showEmpty()
             } else {
+                binding.tvTankName.text = data.tank.Tankname ?: "Tank #${data.tank.TankID}"
                 showData(data)
             }
         }

@@ -25,8 +25,15 @@
             style="@style/Text.BodyMuted"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Select a tank from the dashboard"
-            android:layout_marginTop="2dp" />
+            android:text="Select a tank"
+            android:layout_marginTop="2dp"
+            android:background="?attr/selectableItemBackground"
+            android:paddingVertical="4dp"
+            android:paddingEnd="8dp"
+            android:drawableEnd="@android:drawable/arrow_down_float"
+            android:drawablePadding="6dp"
+            android:textColor="@color/primary"
+            android:textStyle="bold" />
 
         <LinearLayout
             android:layout_width="match_parent"

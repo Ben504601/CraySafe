@@ -15,6 +15,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.craysafe.api.ApiClient
 import com.craysafe.api.models.ReportData
+import com.craysafe.api.models.DashboardData
 import com.craysafe.utils.SessionManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -32,6 +33,9 @@ class ReportsViewModel(app: Application) : AndroidViewModel(app) {
 
     private val _reportData = MutableLiveData<ReportData?>()
     val reportData: LiveData<ReportData?> = _reportData
+
+    private val _tanks = MutableLiveData<List<DashboardData>>()
+    val tanks: LiveData<List<DashboardData>> = _tanks
 
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
@@ -249,6 +253,28 @@ class ReportsViewModel(app: Application) : AndroidViewModel(app) {
             }
         }
         output.flush()
+    }
+
+    fun loadAvailableTanks(sessionManager: SessionManager) {
+        viewModelScope.launch {
+            try {
+                val token = sessionManager.getToken() ?: return@launch
+                val response = ApiClient.apiService.getDashboard("Bearer $token")
+
+                if (response.success && response.data != null) {
+                    _tanks.value = response.data
+                    // If no tank is currently selected, automatically pick the first one
+                    if (sessionManager.getSelectedTankId() == -1 && response.data.isNotEmpty()) {
+                        sessionManager.setSelectedTankId(response.data.first().TankID)
+
+                        // Reload the report with the new tank
+                        loadReport(currentRange, sessionManager, isSilent = false)
+                    }
+                }
+            } catch (e: Exception) {
+                // Ignore errors here
+            }
+        }
     }
 
     fun resetDownloadState() {
