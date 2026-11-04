@@ -102,6 +102,17 @@
         </com.google.android.material.chip.ChipGroup>
     </HorizontalScrollView>
 
+    <!-- Skeleton Loading -->
+    <com.facebook.shimmer.ShimmerFrameLayout
+        android:id="@+id/shimmerView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/filterScroll"
+        app:layout_constraintBottom_toBottomOf="parent">
+        <include layout="@layout/view_skeleton_alerts" />
+    </com.facebook.shimmer.ShimmerFrameLayout>
+
     <!-- Alerts list -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvAlerts"
@@ -148,16 +159,6 @@
             android:gravity="center"
             android:layout_marginTop="@dimen/space_xs" />
     </LinearLayout>
-
-    <ProgressBar
-        android:id="@+id/progressBar"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
-        android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@id/filterScroll"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
 
     <!-- Error State -->
     <include

@@ -103,27 +103,24 @@ class AlertsFragment : Fragment() {
     }
 
     private fun setupObservers() {
-        // 1. First load or Filter change (hides everything to show main spinner)
+        // 1. First load or Filter change (hides everything to show main skeleton)
         viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
-            binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
-            if (isLoading) {
+            val showSkeleton = isLoading && viewModel.alerts.value.isNullOrEmpty()
+            if (showSkeleton) {
+                binding.shimmerView.visibility = View.VISIBLE
+                binding.shimmerView.startShimmer()
                 binding.errorStateLayout.root.visibility = View.GONE
                 binding.rvAlerts.visibility = View.GONE
                 binding.emptyStateLayout.visibility = View.GONE
+            } else {
+                binding.shimmerView.visibility = View.GONE
+                binding.shimmerView.stopShimmer()
             }
         }
 
-        // 2. Pagination load (Bottom scroll - just show the spinner, KEEP the list visible)
-        viewModel.isLoadingMore.observe(viewLifecycleOwner) { isLoadingMore ->
-            if (isLoadingMore) {
-                binding.progressBar.visibility = View.VISIBLE
-            }
-        }
-
-        // 3. Data (Alerts loaded successfully)
+        // 2. Data (Alerts loaded successfully)
         viewModel.alerts.observe(viewLifecycleOwner) { alerts ->
             binding.errorStateLayout.root.visibility = View.GONE
-            binding.progressBar.visibility = View.GONE // Hide spinner when data arrives
 
             if (alerts.isNotEmpty()) {
                 adapter.submitList(alerts)
@@ -136,7 +133,7 @@ class AlertsFragment : Fragment() {
             }
         }
 
-        // 4. Unread count badge
+        // 3. Unread count badge
         viewModel.unreadCount.observe(viewLifecycleOwner) { count ->
             binding.tvUnreadCount.text = if (count == 0) "No unread alerts" else "$count unread"
             (activity as? com.craysafe.MainActivity)?.updateAlertsBadge(count)
@@ -144,7 +141,7 @@ class AlertsFragment : Fragment() {
             binding.btnMarkAllRead.visibility = if (count > 0) View.VISIBLE else View.GONE
         }
 
-        // 5. Error state
+        // 4. Error state
         viewModel.error.observe(viewLifecycleOwner) { error ->
             if (error != null) {
                 binding.errorStateLayout.root.visibility = View.VISIBLE
@@ -153,7 +150,6 @@ class AlertsFragment : Fragment() {
 
                 binding.rvAlerts.visibility = View.GONE
                 binding.emptyStateLayout.visibility = View.GONE
-                binding.progressBar.visibility = View.GONE
             } else {
                 binding.errorStateLayout.root.visibility = View.GONE
             }

@@ -64,11 +64,16 @@ class SupportFragment : Fragment() {
     private fun setupObservers() {
         // 1. Loading State
         viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
-            binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
-            if (isLoading) {
+            val showSkeleton = isLoading && viewModel.items.value.isNullOrEmpty()
+            if (showSkeleton) {
+                binding.shimmerView.visibility = View.VISIBLE
+                binding.shimmerView.startShimmer()
                 binding.errorStateLayout.root.visibility = View.GONE
                 binding.rvDiagnostics.visibility = View.GONE
                 binding.emptyStateLayout.visibility = View.GONE
+            } else {
+                binding.shimmerView.visibility = View.GONE
+                binding.shimmerView.stopShimmer()
             }
         }
 

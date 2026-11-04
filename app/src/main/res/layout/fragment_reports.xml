@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background">
@@ -12,7 +13,8 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:padding="@dimen/space_md"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_editor_absoluteX="0dp">
 
         <TextView
             style="@style/Text.H2"
@@ -25,40 +27,40 @@
             style="@style/Text.BodyMuted"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Select a tank"
             android:layout_marginTop="2dp"
             android:background="?attr/selectableItemBackground"
-            android:paddingVertical="4dp"
-            android:paddingEnd="8dp"
             android:drawableEnd="@android:drawable/arrow_down_float"
             android:drawablePadding="6dp"
+            android:paddingVertical="4dp"
+            android:paddingEnd="8dp"
+            android:text="Select a tank"
             android:textColor="@color/primary"
             android:textStyle="bold" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
+            android:layout_marginTop="@dimen/space_md"
             android:gravity="center_vertical"
-            android:layout_marginTop="@dimen/space_md">
+            android:orientation="horizontal">
 
             <com.google.android.material.chip.ChipGroup
                 android:id="@+id/chipGroupRange"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                app:singleSelection="true"
+                app:chipSpacingHorizontal="@dimen/space_xs"
                 app:selectionRequired="true"
-                app:chipSpacingHorizontal="@dimen/space_xs">
+                app:singleSelection="true">
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chip7d"
                     style="@style/Widget.MaterialComponents.Chip.Choice"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="7D"
                     android:checkable="true"
                     android:checked="true"
+                    android:text="7D"
                     android:textAllCaps="false" />
 
                 <com.google.android.material.chip.Chip
@@ -66,8 +68,8 @@
                     style="@style/Widget.MaterialComponents.Chip.Choice"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="14D"
                     android:checkable="true"
+                    android:text="14D"
                     android:textAllCaps="false" />
 
                 <com.google.android.material.chip.Chip
@@ -75,8 +77,8 @@
                     style="@style/Widget.MaterialComponents.Chip.Choice"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="30D"
                     android:checkable="true"
+                    android:text="30D"
                     android:textAllCaps="false" />
             </com.google.android.material.chip.ChipGroup>
 
@@ -85,11 +87,11 @@
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="PDF"
-                android:textAllCaps="false"
                 android:minWidth="0dp"
                 android:paddingStart="@dimen/space_md"
                 android:paddingEnd="@dimen/space_md"
+                android:text="PDF"
+                android:textAllCaps="false"
                 app:icon="@android:drawable/ic_menu_save"
                 app:iconGravity="textStart" />
         </LinearLayout>
@@ -292,16 +294,19 @@
                     android:gravity="center"
                     android:layout_marginTop="@dimen/space_xs" />
             </LinearLayout>
-
-            <ProgressBar
-                android:id="@+id/progressBar"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_gravity="center"
-                android:layout_marginTop="@dimen/space_md"
-                android:visibility="gone" />
         </LinearLayout>
     </ScrollView>
+
+    <!-- Skeleton Loading -->
+    <com.facebook.shimmer.ShimmerFrameLayout
+        android:id="@+id/shimmerView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/headerLayout"
+        app:layout_constraintBottom_toBottomOf="parent">
+        <include layout="@layout/view_skeleton_reports" />
+    </com.facebook.shimmer.ShimmerFrameLayout>
 
     <!-- Download progress overlay -->
     <FrameLayout

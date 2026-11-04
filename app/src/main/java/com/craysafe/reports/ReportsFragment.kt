@@ -183,7 +183,15 @@ class ReportsFragment : Fragment() {
             }
         }
         viewModel.isLoading.observe(viewLifecycleOwner) { loading ->
-            binding.progressBar.visibility = if (loading) View.VISIBLE else View.GONE
+            val showSkeleton = loading && viewModel.reportData.value == null
+            if (showSkeleton) {
+                binding.shimmerView.visibility = View.VISIBLE
+                binding.shimmerView.startShimmer()
+                binding.contentLayout.visibility = View.GONE
+            } else {
+                binding.shimmerView.visibility = View.GONE
+                binding.shimmerView.stopShimmer()
+            }
         }
         viewModel.error.observe(viewLifecycleOwner) { error ->
             error?.let {
