@@ -74,11 +74,16 @@ class ReportsFragment : Fragment() {
                 description.isEnabled = false
                 setTouchEnabled(false)
                 axisRight.isEnabled = false
+                setExtraOffsets(35f, 10f, 20f, 10f)
                 xAxis.position = XAxis.XAxisPosition.BOTTOM
                 xAxis.setDrawGridLines(false)
                 xAxis.setDrawLabels(false)
+                axisLeft.textSize = 10f
+                axisLeft.setDrawAxisLine(false)
+                axisLeft.setDrawGridLines(true)
+                axisLeft.gridColor = android.graphics.Color.parseColor("#E0E0E0")
+
                 legend.isEnabled = false
-                setViewPortOffsets(20f, 10f, 20f, 10f)
             }
         }
     }
@@ -136,7 +141,7 @@ class ReportsFragment : Fragment() {
         val currentTankId = sessionManager.getSelectedTankId()
         val currentIndex = tankList.indexOfFirst { it.TankID == currentTankId }
 
-        android.app.AlertDialog.Builder(requireContext())
+        androidx.appcompat.app.AlertDialog.Builder(requireContext(), R.style.Theme_CraySafe_Dialog)
             .setTitle("Select a Tank")
             .setSingleChoiceItems(tankNames, currentIndex) { dialog, which ->
                 val selectedTank = tankList[which]
