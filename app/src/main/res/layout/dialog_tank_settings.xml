@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="@dimen/space_lg">
+
+    <TextView
+        style="@style/Text.H2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Tank Settings" />
+
+    <TextView
+        style="@style/Text.BodyMuted"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Hardware and system information"
+        android:layout_marginTop="2dp"
+        android:layout_marginBottom="@dimen/space_md" />
+
+    <!-- Product ID Row -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingVertical="@dimen/space_sm">
+        <TextView
+            style="@style/Text.Body"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="Product ID"
+            android:textColor="@color/text_secondary" />
+        <TextView
+            android:id="@+id/tvProductId"
+            style="@style/Text.Body"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <!-- Tank ID Row -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingVertical="@dimen/space_sm">
+        <TextView
+            style="@style/Text.Body"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="System Tank ID"
+            android:textColor="@color/text_secondary" />
+        <TextView
+            android:id="@+id/tvSystemTankId"
+            style="@style/Text.Body"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/divider"
+        android:layout_marginVertical="@dimen/space_sm" />
+
+    <!-- Hardware Status -->
+    <TextView
+        style="@style/Text.Body"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Hardware Connection"
+        android:textColor="@color/text_secondary" />
+    <TextView
+        android:id="@+id/tvHardwareStatus"
+        style="@style/Text.Body"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:layout_marginTop="4dp" />
+
+    <TextView
+        style="@style/Text.Caption"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="To change the Wi-Fi network, connect a monitor/keyboard to the Orange Pi or use the Armbian Imager to flash a new network profile."
+        android:layout_marginTop="@dimen/space_sm" />
+
+</LinearLayout>

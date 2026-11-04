@@ -3,6 +3,7 @@ package com.craysafe.api.models
 data class TankDetailData(
     val TankID: Int,
     val Tankname: String?,
+    val ProductID: String? = null,
     val Mode: String?,
     val Temperature: Double?,
     val Ph_Level: Double?,

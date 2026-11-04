@@ -131,6 +131,10 @@ class TankDetailFragment : Fragment() {
             val currentName = viewModel.data.value?.Tankname ?: ""
             showRenameDialog(currentName)
         }
+
+        binding.btnSettings.setOnClickListener {
+            showSettingsDialog()
+        }
     }
 
     private fun confirmModeSwitch(current: String, next: String) {
@@ -144,6 +148,40 @@ class TankDetailFragment : Fragment() {
                 viewModel.switchMode(tankId, next, sessionManager)
             }
             .setNegativeButton("Cancel", null)
+            .show()
+    }
+
+    private fun showSettingsDialog() {
+        val data = viewModel.data.value ?: return
+
+        val dialogBinding = com.craysafe.databinding.DialogTankSettingsBinding.inflate(layoutInflater)
+
+        // Populate the data
+        dialogBinding.tvProductId.text = data.ProductID ?: "Unknown"
+        dialogBinding.tvSystemTankId.text = data.TankID.toString()
+
+        // Check if the hardware is online (if the last update was within the last 15 minutes)
+        val isOnline = if (data.LastUpdated != null) {
+            try {
+                val sdf = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.US)
+                sdf.timeZone = java.util.TimeZone.getTimeZone("UTC")
+                val parsed = sdf.parse(data.LastUpdated)
+                val diffMin = (System.currentTimeMillis() - (parsed?.time ?: 0)) / 60_000
+                diffMin < 15 // Less than 15 mins ago
+            } catch (e: Exception) { false }
+        } else false
+
+        if (isOnline) {
+            dialogBinding.tvHardwareStatus.text = "🟢 Online (Receiving Data)"
+            dialogBinding.tvHardwareStatus.setTextColor(androidx.core.content.ContextCompat.getColor(requireContext(), R.color.safe))
+        } else {
+            dialogBinding.tvHardwareStatus.text = "🔴 Offline (Check Power/Wi-Fi)"
+            dialogBinding.tvHardwareStatus.setTextColor(androidx.core.content.ContextCompat.getColor(requireContext(), R.color.critical))
+        }
+
+        AlertDialog.Builder(requireContext(), R.style.Theme_CraySafe_Dialog)
+            .setView(dialogBinding.root)
+            .setPositiveButton("Close", null)
             .show()
     }
 
