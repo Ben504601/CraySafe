@@ -68,6 +68,7 @@ class ReportDetailFragment : Fragment() {
             xAxis.setDrawGridLines(false)
             xAxis.granularity = 1f
             legend.isEnabled = false
+            setExtraOffsets(10f, 10f, 20f, 40f)
         }
     }
 
@@ -86,7 +87,6 @@ class ReportDetailFragment : Fragment() {
             else -> Triple(data.readings.map { it.temperature }, R.color.critical, "°C")
         }
 
-        val labels = data.readings.map { it.timestamp.substring(5, 16) }
         val entries = values.mapIndexed { i, v -> Entry(i.toFloat(), v.toFloat()) }
         val colorInt = androidx.core.content.ContextCompat.getColor(requireContext(), color)
 
@@ -97,7 +97,7 @@ class ReportDetailFragment : Fragment() {
             circleRadius = 3f
             setDrawCircleHole(false)
             setDrawValues(false)
-            mode = LineDataSet.Mode.CUBIC_BEZIER
+            mode = LineDataSet.Mode.LINEAR
             setDrawFilled(true)
             fillColor = colorInt
             fillAlpha = 30
@@ -105,11 +105,40 @@ class ReportDetailFragment : Fragment() {
 
         binding.chartDetail.data = LineData(set)
 
-        val step = (labels.size / 6).coerceAtLeast(1)
-        val shortLabels = labels.filterIndexed { i, _ -> i % step == 0 }
-        binding.chartDetail.xAxis.valueFormatter = IndexAxisValueFormatter(shortLabels)
+        val inputFormat = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.US).apply {
+            timeZone = java.util.TimeZone.getTimeZone("UTC")
+        }
+        val outputFormat = java.text.SimpleDateFormat("hh:mm a", java.util.Locale.US).apply {
+            timeZone = java.util.TimeZone.getDefault()
+        }
+
+        // Map the labels but keep them as a list of strings
+        val labels = data.readings.map { reading ->
+            try {
+                val date = inputFormat.parse(reading.timestamp)
+                if (date != null) outputFormat.format(date) else ""
+            } catch (e: Exception) { "" }
+        }
+
+        binding.chartDetail.xAxis.valueFormatter = object : com.github.mikephil.charting.formatter.ValueFormatter() {
+            override fun getFormattedValue(value: Float): String {
+                val index = value.toInt()
+                return if (index >= 0 && index < labels.size) {
+                    // Only show every 4th label to prevent overcrowding
+                    if (index % 4 == 0) labels[index] else ""
+                } else ""
+            }
+        }
+
         binding.chartDetail.xAxis.labelRotationAngle = -30f
-        binding.chartDetail.xAxis.textSize = 9f
+        binding.chartDetail.xAxis.textSize = 10f
+        binding.chartDetail.xAxis.setAvoidFirstLastClipping(true) // Stops the ends from being cut off
+        binding.chartDetail.xAxis.granularity = 1f
+
+        // Force the chart to stretch from the first to the last index
+        binding.chartDetail.xAxis.axisMinimum = 0f
+        binding.chartDetail.xAxis.axisMaximum = (values.size - 1).toFloat()
+
         binding.chartDetail.invalidate()
 
         // Stats
