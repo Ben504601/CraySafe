@@ -337,11 +337,19 @@ class ReportsFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         viewModel.startPolling(sessionManager)
+
+        if (_binding != null && binding.shimmerView.visibility == View.VISIBLE) {
+            binding.shimmerView.startShimmer()
+        }
     }
 
     override fun onPause() {
         super.onPause()
         viewModel.stopPolling()
+
+        if (_binding != null) {
+            binding.shimmerView.stopShimmer()
+        }
     }
 
     override fun onDestroyView() {

@@ -39,6 +39,12 @@ class DashboardFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        sessionManager = SessionManager(requireContext())
+        viewModel = ViewModelProvider(this)[DashboardViewModel::class.java]
+
+        setupRecyclerView()
+        setupObservers()
+
         binding.fabAddTank.setOnClickListener {
             val dialog = AddTankDialog {
                 // Callback when tank is paired - refresh dashboard
@@ -58,12 +64,6 @@ class DashboardFragment : Fragment() {
         binding.swipeRefresh.setOnRefreshListener {
             viewModel.loadDashboard(sessionManager, isSilent = true)
         }
-
-        sessionManager = SessionManager(requireContext())
-        viewModel = ViewModelProvider(this)[DashboardViewModel::class.java]
-
-        setupRecyclerView()
-        setupObservers()
 
         viewModel.loadDashboard(sessionManager)
     }
@@ -153,11 +153,19 @@ class DashboardFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         viewModel.startPolling(sessionManager)
+
+        if (_binding != null && binding.shimmerView.visibility == View.VISIBLE) {
+            binding.shimmerView.startShimmer()
+        }
     }
 
     override fun onPause() {
         super.onPause()
         viewModel.stopPolling()
+
+        if (_binding != null) {
+            binding.shimmerView.stopShimmer()
+        }
     }
 
     override fun onDestroyView() {

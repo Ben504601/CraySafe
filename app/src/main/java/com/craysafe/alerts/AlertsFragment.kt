@@ -156,6 +156,20 @@ class AlertsFragment : Fragment() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        if (_binding != null && binding.shimmerView.visibility == View.VISIBLE) {
+            binding.shimmerView.startShimmer()
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        if (_binding != null) {
+            binding.shimmerView.stopShimmer()
+        }
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null

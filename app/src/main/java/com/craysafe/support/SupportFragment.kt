@@ -37,14 +37,14 @@ class SupportFragment : Fragment() {
         sessionManager = SessionManager(requireContext())
         viewModel = ViewModelProvider(this)[SupportViewModel::class.java]
 
-        binding.errorStateLayout.btnRetry.setOnClickListener {
-            viewModel.loadQnA(sessionManager)
-        }
-
         setupRecyclerView()
         setupObservers()
         setupSearch()
         setupFilters()
+
+        binding.errorStateLayout.btnRetry.setOnClickListener {
+            viewModel.loadQnA(sessionManager)
+        }
 
         viewModel.loadQnA(sessionManager)
     }
@@ -121,6 +121,20 @@ class SupportFragment : Fragment() {
                 else -> null
             }
             viewModel.filterByCategory(category)
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (_binding != null && binding.shimmerView.visibility == View.VISIBLE) {
+            binding.shimmerView.startShimmer()
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        if (_binding != null) {
+            binding.shimmerView.stopShimmer()
         }
     }
 
