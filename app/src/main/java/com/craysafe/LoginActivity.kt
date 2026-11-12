@@ -15,6 +15,7 @@ import com.craysafe.databinding.ActivityLoginBinding
 import com.craysafe.utils.SessionManager
 import com.craysafe.api.ApiClient
 import kotlinx.coroutines.launch
+import kotlin.jvm.java
 
 class LoginActivity : AppCompatActivity() {
 
@@ -122,6 +123,10 @@ class LoginActivity : AppCompatActivity() {
             }
 
             viewModel.login(email, password)
+        }
+
+        binding.tvForgotPassword.setOnClickListener {
+            startActivity(Intent(this, ForgotPasswordActivity::class.java))
         }
 
         binding.tvRegister.setOnClickListener {

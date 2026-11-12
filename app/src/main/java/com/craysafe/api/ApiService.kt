@@ -49,6 +49,19 @@ interface ApiService {
     ): LoginResponse
 
     @FormUrlEncoded
+    @POST("forgot-password")
+    suspend fun forgotPassword(@Field("email") email: String): BaseResponse
+
+    @FormUrlEncoded
+    @POST("reset-password")
+    suspend fun resetPassword(
+        @Field("email") email: String,
+        @Field("otp") otp: String,
+        @Field("password") password: String,
+        @Field("cinfirm_password") confirmPassword: String
+    ): BaseResponse
+
+    @FormUrlEncoded
     @POST("pair-tank")
     suspend fun pairTank(
         @Header("Authorization") token: String,
