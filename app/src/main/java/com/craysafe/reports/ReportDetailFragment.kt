@@ -68,7 +68,8 @@ class ReportDetailFragment : Fragment() {
             xAxis.setDrawGridLines(false)
             xAxis.granularity = 1f
             legend.isEnabled = false
-            setExtraOffsets(10f, 10f, 20f, 40f)
+            val bottomOffsetPx = resources.displayMetrics.density * 20f
+            setExtraOffsets(10f, 10f, 20f, bottomOffsetPx)
         }
     }
 
@@ -125,13 +126,13 @@ class ReportDetailFragment : Fragment() {
                 val index = value.toInt()
                 return if (index >= 0 && index < labels.size) {
                     // Only show every 4th label to prevent overcrowding
-                    if (index % 4 == 0) labels[index] else ""
+                    if (index % 2 == 0) labels[index] else ""
                 } else ""
             }
         }
 
-        binding.chartDetail.xAxis.labelRotationAngle = -30f
-        binding.chartDetail.xAxis.textSize = 10f
+        binding.chartDetail.xAxis.labelRotationAngle = -45f
+        binding.chartDetail.xAxis.textSize = 9f
         binding.chartDetail.xAxis.setAvoidFirstLastClipping(true) // Stops the ends from being cut off
         binding.chartDetail.xAxis.granularity = 1f
 
