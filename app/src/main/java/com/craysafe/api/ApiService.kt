@@ -58,7 +58,7 @@ interface ApiService {
         @Field("email") email: String,
         @Field("otp") otp: String,
         @Field("password") password: String,
-        @Field("cinfirm_password") confirmPassword: String
+        @Field("confirm_password") confirmPassword: String
     ): BaseResponse
 
     @FormUrlEncoded
