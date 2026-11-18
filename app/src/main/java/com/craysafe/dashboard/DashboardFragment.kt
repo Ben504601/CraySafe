@@ -104,8 +104,9 @@ class DashboardFragment : Fragment() {
         viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
             binding.swipeRefresh.isRefreshing = false
 
-            // Only show the shimmer if we are loading AND we don't have data yet
-            val showSkeleton = isLoading && viewModel.dashboardData.value.isNullOrEmpty()
+            // Only show skeleton if we have no data at all
+            val hasData = !viewModel.dashboardData.value.isNullOrEmpty()
+            val showSkeleton = isLoading && !hasData
 
             if (showSkeleton) {
                 binding.shimmerView.visibility = View.VISIBLE
@@ -113,6 +114,8 @@ class DashboardFragment : Fragment() {
                 binding.errorStateLayout.root.visibility = View.GONE
                 binding.rvTanks.visibility = View.GONE
                 binding.emptyStateLayout.visibility = View.GONE
+            } else if (isLoading && hasData) {
+                binding.shimmerView.visibility = View.GONE
             } else {
                 binding.shimmerView.visibility = View.GONE
                 binding.shimmerView.stopShimmer()

@@ -24,8 +24,12 @@ class DashboardViewModel : ViewModel() {
     val error: LiveData<String?> = _error
 
     private var pollingJob: Job? = null
+    private var isFetching = false
 
     fun loadDashboard(sessionManager: SessionManager, isSilent: Boolean = false) {
+        if (isFetching) return
+
+        isFetching = true
         if (!isSilent) {
             _isLoading.value = true
         }
@@ -48,6 +52,9 @@ class DashboardViewModel : ViewModel() {
                     _isLoading.value = false
                     _error.value = "Network error: ${e.message}"
                 }
+            } finally {
+                isFetching = false
+                if (!isSilent) _isLoading.value = false
             }
         }
     }
@@ -55,9 +62,17 @@ class DashboardViewModel : ViewModel() {
     fun startPolling(sessionManager: SessionManager) {
         if (pollingJob?.isActive == true) return
         pollingJob = viewModelScope.launch {
+            var delayTime = 5000L
             while (isActive) {
                 loadDashboard(sessionManager, isSilent = true)
-                delay(5000) // Wait 5 seconds before next fetch
+
+                if (_error.value != null) {
+                    delayTime = (delayTime * 2).coerceAtMost(60000L)
+                } else {
+                    delayTime = 5000L
+                }
+
+                delay(delayTime)
             }
         }
     }

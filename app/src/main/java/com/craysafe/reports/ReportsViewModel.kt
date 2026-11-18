@@ -57,8 +57,12 @@ class ReportsViewModel(app: Application) : AndroidViewModel(app) {
     private var tankId = -1
 
     private var pollingJob: Job? = null
+    private var isFetching = false
 
     fun loadReport(range: String, sessionManager: SessionManager, isSilent: Boolean = false) {
+        if (isFetching) return
+
+        isFetching = true
         currentRange = range
         tankId = sessionManager.getSelectedTankId()
         if (tankId == -1) {
@@ -88,6 +92,9 @@ class ReportsViewModel(app: Application) : AndroidViewModel(app) {
                     _isLoading.value = false
                     _error.value = "Network error: ${e.message}"
                 }
+            } finally {
+                isFetching = false
+                if (!isSilent) _isLoading.value = false
             }
         }
     }
@@ -95,9 +102,17 @@ class ReportsViewModel(app: Application) : AndroidViewModel(app) {
     fun startPolling(sessionManager: SessionManager) {
         if (pollingJob?.isActive == true) return
         pollingJob = viewModelScope.launch {
+            var delayTime = 10000L
             while (isActive) {
                 loadReport(currentRange, sessionManager, isSilent =true)
-                delay(10000)
+
+                if (_error.value != null) {
+                    delayTime = (delayTime * 2).coerceAtMost(120000L)
+                } else {
+                    delayTime = 10000L
+                }
+                
+                delay(delayTime)
             }
         }
     }
