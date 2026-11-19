@@ -71,6 +71,10 @@ class ReportsFragment : Fragment() {
     private fun setupCharts() {
         listOf(binding.chartTemperature, binding.chartPh, binding.chartTurbidity).forEach { chart ->
             chart.apply {
+                setHardwareAccelerationEnabled(true)
+                setNoDataText("")
+                isDragEnabled = false
+                setScaleEnabled(false)
                 description.isEnabled = false
                 setTouchEnabled(false)
                 axisRight.isEnabled = false
@@ -100,15 +104,6 @@ class ReportsFragment : Fragment() {
     }
 
     private fun setupListeners() {
-        binding.cardTemperature.setOnClickListener {
-            navigateToDetail("temperature")
-        }
-        binding.cardPh.setOnClickListener {
-            navigateToDetail("ph")
-        }
-        binding.cardTurbidity.setOnClickListener {
-            navigateToDetail("turbidity")
-        }
         binding.btnDownloadPdf.setOnClickListener {
             downloadPdf()
         }
@@ -295,12 +290,12 @@ class ReportsFragment : Fragment() {
 
     private fun renderMiniChart(chart: com.github.mikephil.charting.charts.LineChart, values: List<Double>, colorRes: Int) {
         val entries = values.mapIndexed { i, v -> Entry(i.toFloat(), v.toFloat()) }
-        val color = androidx.core.content.ContextCompat.getColor(requireContext(), colorRes)
+        val color = ContextCompat.getColor(requireContext(), colorRes)
 
         val set = LineDataSet(entries, "").apply {
             this.color = color
             lineWidth = 2f
-            setDrawCircles(true)
+            setDrawCircles(false)
             setCircleColor(color)
             setCircleRadius(3f)
             setDrawValues(false)

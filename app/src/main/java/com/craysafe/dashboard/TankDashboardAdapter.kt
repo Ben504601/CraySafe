@@ -4,6 +4,8 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.craysafe.R
 import com.craysafe.api.models.DashboardData
@@ -11,13 +13,11 @@ import com.craysafe.databinding.ItemTankDashboardBinding
 
 class TankDashboardAdapter(
     private val onTankClick: (Int) -> Unit
-) : RecyclerView.Adapter<TankDashboardAdapter.TankViewHolder>() {
+) : ListAdapter<DashboardData, TankDashboardAdapter.TankViewHolder>(DiffCallback()) {
 
-    private var items: List<DashboardData> = emptyList()
-
-    fun submitList(newItems: List<DashboardData>) {
-        items = newItems
-        notifyDataSetChanged()
+    class DiffCallback : DiffUtil.ItemCallback<DashboardData>() {
+        override fun areItemsTheSame(oldItem: DashboardData, newItem: DashboardData) = oldItem.TankID == newItem.TankID
+        override fun areContentsTheSame(oldItem: DashboardData, newItem: DashboardData) = oldItem == newItem
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TankViewHolder {
@@ -30,10 +30,8 @@ class TankDashboardAdapter(
     }
 
     override fun onBindViewHolder(holder: TankViewHolder, position: Int) {
-        holder.bind(items[position])
+        holder.bind(getItem(position))
     }
-
-    override fun getItemCount(): Int = items.size
 
     class TankViewHolder(
         private val binding: ItemTankDashboardBinding,
@@ -42,14 +40,12 @@ class TankDashboardAdapter(
 
         fun bind(data: DashboardData) {
             binding.apply {
-                // ── 1. Text fields ──
                 tvTankName.text = data.Tankname ?: "Tank #${data.TankID}"
                 tvTemperature.text = formatReading(data.Temperature) + "°"
                 tvPh.text = formatReading(data.Ph_Level)
                 tvTurbidity.text = formatReading(data.Turbidity)
                 tvMode.text = data.Mode ?: "Growing"
 
-                // ── 2. Status: pick colors and label ──
                 val status = data.Status?.lowercase() ?: "unknown"
                 val (colorRes, label) = when (status) {
                     "safe" -> R.color.safe to "All readings normal"
@@ -60,10 +56,7 @@ class TankDashboardAdapter(
 
                 val statusColor = ContextCompat.getColor(root.context, colorRes)
 
-                // Status dot
                 statusDot.background.setTint(statusColor)
-
-                // Status text
                 tvStatus.text = label
                 tvStatus.setTextColor(statusColor)
 
@@ -71,14 +64,10 @@ class TankDashboardAdapter(
                 tvPh.setTextColor(getStatusColor(root.context, data.PhStatus))
                 tvTurbidity.setTextColor(getStatusColor(root.context, data.TurbidityStatus))
 
-                // ── 3. Mode pill background ──
                 val modeBgRes = if (data.Mode == "Breeding") R.color.warning_bg else R.color.info_bg
                 tvMode.setBackgroundColor(ContextCompat.getColor(root.context, modeBgRes))
 
-                // ── 4. Click handler ──
-                root.setOnClickListener {
-                    onTankClick(data.TankID)
-                }
+                root.setOnClickListener { onTankClick(data.TankID) }
             }
         }
 

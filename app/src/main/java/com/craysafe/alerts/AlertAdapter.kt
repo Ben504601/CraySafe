@@ -4,6 +4,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.craysafe.R
 import com.craysafe.api.models.Alert
@@ -11,13 +13,17 @@ import com.craysafe.databinding.ItemAlertBinding
 
 class AlertAdapter(
     private val onAlertClick: (Alert) -> Unit
-) : RecyclerView.Adapter<AlertAdapter.AlertViewHolder>() {
+) : ListAdapter<Alert, AlertAdapter.AlertViewHolder>(DiffCallback()) {
 
-    private var items: List<Alert> = emptyList()
+    class DiffCallback : DiffUtil.ItemCallback<Alert>() {
+        override fun areItemsTheSame(oldItem: Alert, newItem: Alert): Boolean {
+            return oldItem.alert_id == newItem.alert_id
+        }
 
-    fun submitList(newItems: List<Alert>) {
-        items = newItems
-        notifyDataSetChanged()
+        override fun areContentsTheSame(oldItem: Alert, newItem: Alert): Boolean {
+            // Since Alert is a data class, this compares all fields (status, message, etc.)
+            return oldItem == newItem
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AlertViewHolder {
@@ -30,10 +36,8 @@ class AlertAdapter(
     }
 
     override fun onBindViewHolder(holder: AlertViewHolder, position: Int) {
-        holder.bind(items[position])
+        holder.bind(getItem(position))
     }
-
-    override fun getItemCount(): Int = items.size
 
     class AlertViewHolder(
         private val binding: ItemAlertBinding,

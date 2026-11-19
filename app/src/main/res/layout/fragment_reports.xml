@@ -97,9 +97,10 @@
         </LinearLayout>
     </LinearLayout>
 
-    <ScrollView
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:fillViewport="true"
         android:paddingHorizontal="@dimen/space_md"
         android:paddingBottom="@dimen/space_md"
         android:clipToPadding="false"
@@ -295,7 +296,7 @@
                     android:layout_marginTop="@dimen/space_xs" />
             </LinearLayout>
         </LinearLayout>
-    </ScrollView>
+    </androidx.core.widget.NestedScrollView>
 
     <!-- Skeleton Loading -->
     <com.facebook.shimmer.ShimmerFrameLayout
