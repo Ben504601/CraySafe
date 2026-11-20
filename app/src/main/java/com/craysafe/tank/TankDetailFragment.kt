@@ -9,6 +9,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import com.craysafe.R
 import com.craysafe.api.models.TankDetailData
 import com.craysafe.databinding.FragmentTankDetailBinding
@@ -86,6 +87,16 @@ class TankDetailFragment : Fragment() {
                 viewModel.resetRenameState()
             }
         }
+
+        viewModel.removeResult.observe(viewLifecycleOwner) { success ->
+            if (success == true) {
+                Toast.makeText(requireContext(), "Tank removed successfully", Toast.LENGTH_SHORT).show()
+                viewModel.resetRemoveState()
+                findNavController().navigateUp()
+            } else if (success == false) {
+                viewModel.resetRemoveState()
+            }
+        }
     }
 
     private fun updateUI(data: TankDetailData) {
@@ -130,6 +141,10 @@ class TankDetailFragment : Fragment() {
         binding.btnEditName.setOnClickListener {
             val currentName = viewModel.data.value?.Tankname ?: ""
             showRenameDialog(currentName)
+        }
+
+        binding.btnRemoveTank.setOnClickListener {
+            showRemoveTankDialog()
         }
 
         binding.btnSettings.setOnClickListener {
@@ -199,6 +214,17 @@ class TankDetailFragment : Fragment() {
                 if (newName.isNotEmpty() && newName != currentName) {
                     viewModel.renameTank(tankId, newName, sessionManager)
                 }
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+
+    private fun showRemoveTankDialog() {
+        AlertDialog.Builder(requireContext(), R.style.Theme_CraySafe_Dialog)
+            .setTitle("Remove Tank?")
+            .setMessage("Are you sure you want to remove this tank?\n\nThis will permanently delete all historical sensor data and alerts for this tank. The hardware device will be unpaired and can be registered to a new account.")
+            .setPositiveButton("Remove") { _, _ ->
+                viewModel.removeTank(tankId, sessionManager)
             }
             .setNegativeButton("Cancel", null)
             .show()

@@ -356,5 +356,19 @@
             android:visibility="gone"
             android:layout_marginTop="@dimen/space_md" />
 
+        <!-- Remove Tank Button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnRemoveTank"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_xl"
+            android:layout_marginBottom="@dimen/space_lg"
+            android:text="Remove Tank"
+            android:textAllCaps="false"
+            android:textColor="@color/critical"
+            app:cornerRadius="@dimen/radius_sm"
+            app:strokeColor="@color/critical" />
+
     </LinearLayout>
 </ScrollView>

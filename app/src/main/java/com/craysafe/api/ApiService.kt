@@ -105,6 +105,12 @@ interface ApiService {
         @Query("range") range: String
     ): ResponseBody
 
+    @POST("tank/{id}/remove")
+    suspend fun removeTank(
+        @Header("Authorization") token: String,
+        @Path("id") tankId: Int
+    ): BaseResponse
+
     @GET("alerts")
     suspend fun getAlerts(
         @Header("Authorization") token: String,

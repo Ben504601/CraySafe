@@ -29,6 +29,9 @@ class TankDetailViewModel : ViewModel() {
     private val _renameResult = MutableLiveData<Boolean?>()
     val renameResult: LiveData<Boolean?> = _renameResult
 
+    private val _removeResult = MutableLiveData<Boolean?>()
+    val removeResult: LiveData<Boolean?> = _removeResult
+
     private var pollingJob: Job? = null
 
     fun loadTankDetail(tankId: Int, sessionManager: SessionManager, isSilent: Boolean = false) {
@@ -132,6 +135,29 @@ class TankDetailViewModel : ViewModel() {
                 _renameResult.value = false
             }
         }
+    }
+
+    fun removeTank(tankId: Int, sessionManager: SessionManager) {
+        viewModelScope.launch {
+            try {
+                val token = sessionManager.getToken() ?: return@launch
+                val response = ApiClient.apiService.removeTank("Bearer $token", tankId)
+
+                if (response.success) {
+                    _removeResult.value = true
+                } else {
+                    _error.value = response.message ?: "Failed to remove tank"
+                    _removeResult.value = false
+                }
+            } catch (e: Exception) {
+                _error.value = "Network error: ${e.message}"
+                _removeResult.value = false
+            }
+        }
+    }
+
+    fun resetRemoveState() {
+        _removeResult.value = null
     }
 
     fun resetRenameState() {
