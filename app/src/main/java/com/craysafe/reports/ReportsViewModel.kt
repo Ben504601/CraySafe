@@ -278,17 +278,21 @@ class ReportsViewModel(app: Application) : AndroidViewModel(app) {
                 val response = ApiClient.apiService.getDashboard("Bearer $token")
 
                 if (response.success && response.data != null) {
-                    _tanks.value = response.data
-                    // If no tank is currently selected, automatically pick the first one
-                    if (sessionManager.getSelectedTankId() == -1 && response.data.isNotEmpty()) {
-                        sessionManager.setSelectedTankId(response.data.first().TankID)
+                    val sortedTanks = response.data.sortedBy { it.TankID }
+                    _tanks.value = sortedTanks
 
-                        // Reload the report with the new tank
+                    val currentSelectedId = sessionManager.getSelectedTankId()
+
+                    val tankExists = sortedTanks.any { it.TankID == currentSelectedId }
+
+                    // If no tank is selected, or the saved tank was deleted, pick the oldest one
+                    if ((currentSelectedId == -1 || !tankExists) && sortedTanks.isNotEmpty()) {
+                        sessionManager.setSelectedTankId(sortedTanks.first().TankID)
                         loadReport(currentRange, sessionManager, isSilent = false)
                     }
                 }
             } catch (e: Exception) {
-                // Ignore errors here
+                // Ignore network errors here
             }
         }
     }

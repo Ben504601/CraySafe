@@ -93,10 +93,8 @@ class ReportDetailFragment : Fragment() {
 
         val set = LineDataSet(entries, "").apply {
             this.color = colorInt
-            setCircleColor(colorInt)
             lineWidth = 2.5f
-            circleRadius = 3f
-            setDrawCircleHole(false)
+            setDrawCircles(false)
             setDrawValues(false)
             mode = LineDataSet.Mode.LINEAR
             setDrawFilled(true)

@@ -64,8 +64,18 @@ class ReportsFragment : Fragment() {
         setupListeners()
         observe()
 
-        viewModel.loadReport("7d", sessionManager)
         viewModel.loadAvailableTanks(sessionManager)
+
+        if (viewModel.reportData.value == null) {
+            viewModel.loadReport("7d", sessionManager)
+        } else {
+            val currentRange = viewModel.getCurrentRange()
+            when (currentRange) {
+                "14d" -> binding.chipGroupRange.check(R.id.chip14d)
+                "30d" -> binding.chipGroupRange.check(R.id.chip30d)
+                else -> binding.chipGroupRange.check(R.id.chip7d)
+            }
+        }
     }
 
     private fun setupCharts() {
@@ -128,7 +138,8 @@ class ReportsFragment : Fragment() {
     private fun showTankSelectionDialog() {
         val tankList = viewModel.tanks.value
         if (tankList.isNullOrEmpty()) {
-            Toast.makeText(requireContext(), "No tanks available", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), "Fetching your tanks, please try again in a moment...", Toast.LENGTH_SHORT).show()
+            viewModel.loadAvailableTanks(sessionManager)
             return
         }
 
@@ -296,8 +307,6 @@ class ReportsFragment : Fragment() {
             this.color = color
             lineWidth = 2f
             setDrawCircles(false)
-            setCircleColor(color)
-            setCircleRadius(3f)
             setDrawValues(false)
             mode = LineDataSet.Mode.LINEAR
             setDrawFilled(true)
