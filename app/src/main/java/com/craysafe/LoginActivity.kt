@@ -59,6 +59,8 @@ class LoginActivity : AppCompatActivity() {
             binding.tilEmail.isEnabled = !isLoading
             binding.tilPassword.isEnabled = !isLoading
 
+            binding.btnLogin.text = if (isLoading) "" else "Sign In"
+
             if (isLoading) {
                 binding.tvSlowHint.visibility = View.GONE
                 binding.root.postDelayed({
