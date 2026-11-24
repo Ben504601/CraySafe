@@ -2,10 +2,24 @@ package com.craysafe.utils
 
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.security.crypto.EncryptedSharedPreferences
+import androidx.security.crypto.MasterKey
 
 class SessionManager(context: Context) {
 
-    private val prefs: SharedPreferences = context.getSharedPreferences("craysafe_prefs", Context.MODE_PRIVATE)
+    // 1. Create the Master Key using the Android Keystore
+    private val masterKey = MasterKey.Builder(context)
+        .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+        .build()
+
+    // 2. Initialize EncryptedSharedPreferences
+    private val prefs: SharedPreferences = EncryptedSharedPreferences.create(
+        context,
+        "craysafe_secure_prefs", // Changed the file name to distinguish from the old one
+        masterKey,
+        EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+        EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+    )
 
     companion object {
         private const val KEY_TOKEN = "auth_token"
@@ -35,9 +49,11 @@ class SessionManager(context: Context) {
     fun getUserEmail(): String? = prefs.getString(KEY_USER_EMAIL, null)
     fun getUserRole(): String? = prefs.getString(KEY_USER_ROLE, "user")
     fun isLoggedIn(): Boolean = prefs.getBoolean(KEY_IS_LOGGED_IN, false)
+
     fun setSelectedTankId(tankId: Int) {
         prefs.edit().putInt(KEY_SELECTED_TANK_ID, tankId).apply()
     }
+
     fun getSelectedTankId(): Int {
         return prefs.getInt(KEY_SELECTED_TANK_ID, -1)
     }

@@ -19,6 +19,17 @@ class RegisterViewModel : ViewModel() {
     val isLoading: LiveData<Boolean> = _isLoading
 
     fun register(username: String, email: String, password: String, passwordConfirmation: String, productId: String) {
+
+        val regex = Regex("^[a-zA-Z0-9\\s\\-_]+$")
+        if (!regex.matches(username)) {
+            _registerResult.value = LoginResult.Error("Username can only contain letters, numbers, spaces, hyphens, and underscores.")
+            return
+        }
+        if (productId.contains(Regex("[<>\"'%;()&+]"))) {
+            _registerResult.value = LoginResult.Error("Invalid Product ID format.")
+            return
+        }
+
         _isLoading.value = true
 
         viewModelScope.launch {
